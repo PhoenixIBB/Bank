@@ -4,7 +4,7 @@ import java.time.Month;
 import java.util.*;
 
 public class BankInfoDisplay {
-
+// TestChanges
     //Поля
     private final List<BankTransaction> bankTransactions;
     double monthTransactionsSummary;
