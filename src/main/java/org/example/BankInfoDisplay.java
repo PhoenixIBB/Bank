@@ -10,7 +10,7 @@ public class BankInfoDisplay {
     double monthTransactionsSummary;
     Month currentMonth;
     long sharpQuantityVertical;
-// }{yu
+
     //Конструктор
     public BankInfoDisplay(List<BankTransaction> bankTransactions) {
         this.bankTransactions = bankTransactions;
