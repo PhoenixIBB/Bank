@@ -42,6 +42,7 @@ public class BankMain {
         this.bankParser = bankParser;
         }
 
+    // Главный управляющий метод
     public void analyze () throws IOException {
         //Инициализация необходимых объектов
         List <BankTransaction> bankTransactions = importManager.collectInformation(bankParser);

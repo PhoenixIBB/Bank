@@ -30,7 +30,7 @@ public class ImportManager {
         System.out.println("\nВведите имя файла: \n");
 //        Scanner scan = new Scanner(System.in);
 //        String fileName = scan.nextLine();
-        final Path path = Paths.get(RESOURCES + "XMLfile.xml");
+        final Path path = Paths.get(RESOURCES + "HTMLfile.html");
         final List<String> lines = Files.readAllLines(path);
         System.out.println("Сборка и сортировка транзакций...");
         System.out.println("Строк собрано: " + lines.size());

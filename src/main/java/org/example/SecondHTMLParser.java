@@ -12,13 +12,13 @@ import java.util.regex.PatternSyntaxException;
 
 public class SecondHTMLParser implements BankStatementParser {
 
-    public static DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    public static DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public List<BankTransaction> parseLinesFrom (List<String> lines) {
 
         List<BankTransaction> bankTransactions = new ArrayList<>();
 
-        String regex = "\\s*(<\\w+>)(.+(\\s\\w+)*)(</\\w+>)";
+        String regex = "(\\s*)(<\\w+>)(.+(\\s\\w+)*)(</\\w+>)";
         int i = 0;
         LocalDate date = null;
         double amount = 0;
@@ -28,21 +28,21 @@ public class SecondHTMLParser implements BankStatementParser {
 
         for (String line : lines) {
 
-            if(line.matches("\\s*(<\\w+>)(.+(\\s\\w+)*)(</\\w+>)")) {
+            if(line.matches("(\\s*)(<td>)(.+(\\s\\w+)*)(</td>)")) {
 
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(line);
 
                 if (matcher.find()) {
-                    String lineFormatted = matcher.group(1);
+                    String lineFormatted = matcher.group(3);
 
-                    if (lineFormatted.matches("(<td>)(\\d{2}-\\d{2}-\\d{4})(</td>)")) {
-                        date = LocalDate.parse(line, DATE_PATTERN);
+                    if (lineFormatted.matches("\\d{2}-\\d{2}-\\d{4}")) {
+                        date = LocalDate.parse(lineFormatted, DATE_PATTERN);
                         i++;
-                    } else if (lineFormatted.matches("(<td>)(.?\\d+)(</td>)")) {
+                    } else if (lineFormatted.matches(".?\\d+")) {
                         amount = Double.parseDouble(lineFormatted);
                         i++;
-                    } else if (lineFormatted.matches("(<td>)(\\w+)(\\s\\w+)*(</td>)")) {
+                    } else if (lineFormatted.matches("[а-яА-Яa-zA-Z]+(\\s?[а-яА-Яa-zA-Z])*")) {
                         description = lineFormatted;
                         i++;
                     }
@@ -55,18 +55,18 @@ public class SecondHTMLParser implements BankStatementParser {
             }
         }
     } catch (NullPointerException e) {
-        System.out.println("\nОшибка XML-парсера. Одно из полей содержит null: " + e.getMessage() + "\n");
+        System.out.println("\nОшибка HTML-парсера. Одно из полей содержит null: " + e.getMessage() + "\n");
     } catch (
     PatternSyntaxException e) {
-        System.out.println("\nОшибка XML-парсера. Несоответствие переданной строки паттерну: " + e.getMessage() + "\n");
+        System.out.println("\nОшибка HTML-парсера. Несоответствие переданной строки паттерну: " + e.getMessage() + "\n");
     } catch (
     DateTimeParseException e) {
-        System.out.println("\nОшибка XML-парсера. Несоответствие даты паттерну: " + e.getMessage() + "\n");
+        System.out.println("\nОшибка HTML-парсера. Несоответствие даты паттерну: " + e.getMessage() + "\n");
     } catch (
     NoSuchElementException e) {
-        System.out.println("\nОшибка XML-парсера. Не найден нужный элемент: " + e.getMessage() + "\n");
+        System.out.println("\nОшибка HTML-парсера. Не найден нужный элемент: " + e.getMessage() + "\n");
     } catch (NumberFormatException e) {
-        System.out.println("\nОшибка XML-парсера. Несоответствие числа паттерну: " + e.getMessage() + "\n");
+        System.out.println("\nОшибка HTML-парсера. Несоответствие числа паттерну: " + e.getMessage() + "\n");
     } catch (Exception e) {
         System.out.println("\nПроизошла непредвиденная ошибка: " + e.getMessage() + "\n");
     }
