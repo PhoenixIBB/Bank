@@ -26,8 +26,10 @@ public class BankMain {
 
 
     public static void main (String... args) throws IOException {
-        BankStatementParser bankParserXML = new BankXMLParser();
-        final BankMain bankAnalyzer = new BankMain(bankParserXML);
+        //BankStatementParser bankStatementParser = new BankXMLParser();
+        BankStatementParser bankStatementParser = new SecondHTMLParser();
+        //BankStatementParser bankStatementParser = new BankCSVParser();
+        final BankMain bankAnalyzer = new BankMain(bankStatementParser);
         bankAnalyzer.analyze();
 
     }
