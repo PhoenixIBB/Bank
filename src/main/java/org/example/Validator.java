@@ -20,13 +20,16 @@ public class Validator {
     }
 
     public static void checkValidatorNotifications () {
+        int i = 0;
         if (Validator.bankTransactionsInvalid != null) {
             for (BankTransaction bankTransaction : Validator.bankTransactionsInvalid) {
                 System.out.println("Некорректная транзакция №" + bankTransaction.getOperationNumber() + ";");
                 System.out.println("Содержимое транзакции: \nДата:" + bankTransaction.getDate() + "; Стоимость: " + bankTransaction.getAmount() + "; Категория: " + bankTransaction.getDescription() + ".");
                 System.out.println(bankTransaction.notification.errorMessage());
+            i++;
             }
         }
+        if (i == 0) System.out.println("\nНекорректных транзакций нет.");
     }
 
     public Notification validate() {

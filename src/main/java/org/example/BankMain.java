@@ -15,7 +15,7 @@ public class BankMain {
     // 1.Зациклить работу приложения V
     // 2.Добавить обработку исключений V
     // 3.Покрыть большую часть кода тестами
-    // 4.Реализовать поддержку импорта JSON, XML
+    // 4.Реализовать поддержку импорта JSON, XML, HTML
     // 5.Реализовать поддержку экспорта HTML, CSV, JSON, XML
     // 6.Разработать базовый графический интерфейс GUI для анализатора банковских операций
     // 7.Подключить к коду notifications и validator
@@ -27,8 +27,8 @@ public class BankMain {
 
     public static void main (String... args) throws IOException {
         //BankStatementParser bankStatementParser = new BankXMLParser();
-        BankStatementParser bankStatementParser = new SecondHTMLParser();
-        //BankStatementParser bankStatementParser = new BankCSVParser();
+        //BankStatementParser bankStatementParser = new BankHTMLParser();
+        BankStatementParser bankStatementParser = new BankCSVParser();
         final BankMain bankAnalyzer = new BankMain(bankStatementParser);
         bankAnalyzer.analyze();
 

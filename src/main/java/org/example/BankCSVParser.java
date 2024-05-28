@@ -10,8 +10,6 @@ import static org.example.BankTransaction.validatedConstructor;
 
 public class BankCSVParser implements BankStatementParser {
 
-    static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
     public BankTransaction formatFrom (final String line) {
         final String[] columns = line.split(",");
         LocalDate date = null;
@@ -23,10 +21,10 @@ public class BankCSVParser implements BankStatementParser {
                 // Преобразуем дату, если она доступна
                 try {
                     if (columns[0] != null && !columns[0].isEmpty()) {
-                        date = LocalDate.parse(columns[0], DATE_PATTERN);
+                        date = LocalDate.parse(columns[0], BankStatementParser.DATE_PATTERN);
                     }
                 } catch (DateTimeParseException e) {
-                    date = LocalDate.parse("01-01-2300", DATE_PATTERN);
+                    date = LocalDate.parse("01-01-2300", BankStatementParser.DATE_PATTERN);
                 }
                 // Преобразуем сумму, если она доступна
                 try {

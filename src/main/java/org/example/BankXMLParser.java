@@ -12,9 +12,6 @@ import static org.example.BankTransaction.validatedConstructor;
 
 public class BankXMLParser implements BankStatementParser {
 
-    static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-
     public List<BankTransaction> parseLinesFrom(List<String> lines) {
 
         List<BankTransaction> bankTransactions = new ArrayList<>();
@@ -33,7 +30,7 @@ public class BankXMLParser implements BankStatementParser {
                     if (matcher.find()) {
                         String lineExtracted = matcher.group(2);
 
-                        if (lineExtracted.matches("\\d{2}-\\d{2}-\\d{4}")) {
+                        if (lineExtracted.matches("\\d{2}-\\d{2}-\\d{4}") || lineExtracted.matches("\\d{2}\\.\\d{2}\\.\\d{4}")) {
                             fields.add(lineExtracted);
 
                         } else if (lineExtracted.matches(".?\\d+")) {
@@ -45,7 +42,7 @@ public class BankXMLParser implements BankStatementParser {
                     }
                 }
                 if (fields.size() == 3) {
-                    LocalDate date = LocalDate.parse(fields.poll(), DATE_PATTERN);
+                    LocalDate date = LocalDate.parse(fields.poll(), BankStatementParser.DATE_PATTERN);
                     double amount = Double.parseDouble(fields.poll());
                     String description = fields.poll();
                     bankTransactions.add(validatedConstructor(date, amount, description));

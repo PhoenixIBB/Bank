@@ -10,9 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class SecondHTMLParser implements BankStatementParser {
-
-    public static DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+public class BankHTMLParser implements BankStatementParser {
 
     public List<BankTransaction> parseLinesFrom (List<String> lines) {
 
@@ -36,8 +34,8 @@ public class SecondHTMLParser implements BankStatementParser {
                 if (matcher.find()) {
                     String lineFormatted = matcher.group(3);
 
-                    if (lineFormatted.matches("\\d{2}-\\d{2}-\\d{4}")) {
-                        date = LocalDate.parse(lineFormatted, DATE_PATTERN);
+                    if (lineFormatted.matches("\\d{2}-\\d{2}-\\d{4}") || lineFormatted.matches("\\d{2}\\.\\d{2}\\.\\d{4}")) {
+                        date = LocalDate.parse(lineFormatted, BankStatementParser.DATE_PATTERN);
                         i++;
                     } else if (lineFormatted.matches(".?\\d+")) {
                         amount = Double.parseDouble(lineFormatted);

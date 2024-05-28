@@ -187,14 +187,19 @@ public class BankStatementProcessor {
 
     // Найти и вывести все транзакции, дороже указанной суммы за определенный период
     public void findTransactions (final BankTransactionFilter bankTransactionFilter) {
+        int i = 0;
         try {
             for (BankTransaction bankTransaction : bankTransactions) {
                 if (bankTransactionFilter.test(bankTransaction)) {
+                    i++;
                     System.out.println("\nИскомые транзакции:\n" + "Транзакция №" + bankTransaction.getOperationNumber() + "\nДата: " + bankTransaction.getDate() + ". Стоимость: " + bankTransaction.getAmount() + ". Описание: " + bankTransaction.getDescription());
                 }
             }
         } catch (NoSuchElementException e) {
             System.out.println("\nК сожалению, искомый элемент не найден.");
+        }
+        if(i == 0) {
+            System.out.println("\nТранзакции не найдены!");
         }
     }
 
@@ -219,18 +224,21 @@ public class BankStatementProcessor {
 
     // Получить транзакцию по дате
     public void getTransactionByDate () {
+        int i = 0;
         try {Scanner scan = new Scanner(System.in);
             System.out.println("\nВведите дату искомой транзакции в формате 'dd-MM-yyyy'.");
             String dateLine = scan.nextLine();
             LocalDate date = LocalDate.parse(dateLine, BankXMLParser.DATE_PATTERN);
             for (BankTransaction bankTransaction : bankTransactions) {
                 if (bankTransaction.getDate() == date) {
+                    i++;
                     System.out.println("Транзакция №" + bankTransaction.getOperationNumber() + ". Информация:\nДата транзакции: " + bankTransaction.getDate() + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
                 }
             }
         } catch (DateTimeParseException | NullPointerException e) {
             System.out.println("Неверный формат даты. Пожалуйста, введите дату в формате 'dd-MM-yyyy'");
         }
+        if (i == 0) System.out.println("\nТранзакция не найдена.");
     }
 
 

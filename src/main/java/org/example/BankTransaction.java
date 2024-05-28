@@ -32,6 +32,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
     // Сделать, чтобы в конце можно было вывести все плохие транзакции
     // Сделать корректные выводы ошибок, если неверно введен месяц и т.п.
     // Сделать вывод "не найдено" там, где объект не найден
+    // Автовыбор формата импорта
 
     //Конструктор с валидацией входных данных
     public static BankTransaction validatedConstructor (LocalDate date, double amount, String description) {
