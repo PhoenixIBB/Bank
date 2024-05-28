@@ -1,9 +1,7 @@
 import org.example.BankJSONParser;
 import org.example.BankStatementParser;
 import org.example.BankTransaction;
-import org.example.ImportManager;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -13,7 +11,6 @@ import java.util.List;
 public class BankJSONParserTest {
     private final BankStatementParser statementParser = new BankJSONParser();
     private final List<String> lines = new ArrayList<>();
-    private List<BankTransaction> bankTransactions = new ArrayList<>();
 
     @Test
     public void shouldParseAndCreateACorrectObjectsFromOneLine () {
@@ -44,6 +41,6 @@ public class BankJSONParserTest {
         List<BankTransaction> expected = new ArrayList<>();
         expected.add(new BankTransaction(LocalDate.parse("06-01-2023", BankStatementParser.DATE_PATTERN), -290, "Одежда", true, null));
 
-        Assert.assertEquals(expected.get(0), result.get(0));
+        Assert.assertEquals(expected.getFirst(), result.getFirst());
     }
 }

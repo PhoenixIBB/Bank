@@ -42,9 +42,7 @@ public class BankMain {
             case 2 -> bankStatementParser = new BankHTMLParser();
             case 3 -> bankStatementParser = new BankCSVParser();
             case 4 -> bankStatementParser = new BankJSONParser();
-            default -> {
-                System.out.println("Неверный ввод!");
-            }
+            default -> System.out.println("Неверный ввод!");
         }
         //BankStatementParser bankStatementParser = new BankXMLParser();
         //BankStatementParser bankStatementParser = new BankHTMLParser();
