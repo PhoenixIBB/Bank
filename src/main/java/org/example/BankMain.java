@@ -26,9 +26,30 @@ public class BankMain {
 
 
     public static void main (String... args) throws IOException {
+        BankStatementParser bankStatementParser = null;
+        System.out.println("""
+            Выберите формат файла.
+            1 - XML
+            2 - HTML
+            3 - CSV
+            4 - JSON
+            (временно, далее заменить на автоматический выбор по пришедшему формату)
+            """);
+        Scanner scan = new Scanner(System.in);
+        int choice = scan.nextInt();
+        switch (choice) {
+            case 1 -> bankStatementParser = new BankXMLParser();
+            case 2 -> bankStatementParser = new BankHTMLParser();
+            case 3 -> bankStatementParser = new BankCSVParser();
+            case 4 -> bankStatementParser = new BankJSONParser();
+            default -> {
+                System.out.println("Неверный ввод!");
+            }
+        }
         //BankStatementParser bankStatementParser = new BankXMLParser();
         //BankStatementParser bankStatementParser = new BankHTMLParser();
-        BankStatementParser bankStatementParser = new BankCSVParser();
+        //BankStatementParser bankStatementParser = new BankCSVParser();
+        //BankStatementParser bankStatementParser = new BankJSONParser();
         final BankMain bankAnalyzer = new BankMain(bankStatementParser);
         bankAnalyzer.analyze();
 

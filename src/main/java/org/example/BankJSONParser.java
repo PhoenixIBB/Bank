@@ -51,6 +51,9 @@ public class BankJSONParser implements BankStatementParser {
                 BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description);
                 bankTransactions.add(bankTransaction);
                 i = 0;
+                date = null;
+                amount = 0;
+                description = null;
             }
         }
         return bankTransactions;
