@@ -79,7 +79,6 @@ public class BankInfoDisplay {
         }
     }
 
-
     //Метод для вывода гистограммы
     public void generateGystogram() {
         TreeMap<Month, List<BankTransaction>> sortedTransactionsMap = new TreeMap<>();
