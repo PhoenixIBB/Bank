@@ -49,7 +49,7 @@ public class BankInfoDisplay {
 
         for (BankTransaction bankTransaction : bankTransactions) {
             if (bankTransaction.getDate().isEqual(leftEdge) || bankTransaction.getDate().isAfter(leftEdge) && bankTransaction.getDate().isEqual(rightEdge) || bankTransaction.getDate().isBefore(rightEdge)) {
-                System.out.println(bankTransaction);
+                System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
             }
         }
     }
@@ -64,7 +64,7 @@ public class BankInfoDisplay {
 
         for (BankTransaction bankTransaction : bankTransactions) {
             if (bankTransaction.getOperationNumber() >= leftEdge && bankTransaction.getOperationNumber() <= rightEdge) {
-                System.out.println(bankTransaction);
+                System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
             }
         }
     }

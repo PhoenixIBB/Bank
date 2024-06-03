@@ -2,10 +2,7 @@ package org.example;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,11 +71,17 @@ public class BankPDFParser implements BankStatementParser {
         } catch (Exception e) {
             System.out.println("Ошибка PDF-парсера. Ошибка при сборке транзакций: " + e.getClass());
         }
-        TreeMap<BankTransaction, Integer> bankTransactionTreeMap = new TreeMap<BankTransaction, Integer>((bankTransactionFirst, bankTransactionSecond) -> {
-            if (bankTransactionFirst.getDate().isAfter(bankTransactionFirst.getDate())) return 1;
+//        TreeMap<Integer, BankTransaction> bankTransactionTreeMap = new TreeMap<Integer, BankTransaction>((bankTransactionFirst, bankTransactionSecond) -> {
+//            if (bankTransactionFirst.getDate().isBefore(bankTransactionSecond.getDate())) return 1;
+//            else if (bankTransactionFirst.getDate().isAfter(bankTransactionSecond.getDate())) return -1;
+//            else return 0;
+//        });
+        bankTransactions.sort((bankTransactionFirst, bankTransactionSecond) -> {
+            if (bankTransactionFirst.getDate().isAfter(bankTransactionSecond.getDate())) return 1;
             else if (bankTransactionFirst.getDate().isBefore(bankTransactionSecond.getDate())) return -1;
             else return 0;
         });
+//        List<BankTransaction> bankTransactionsSorted = new ArrayList<BankTransaction>(bankTransactionTreeMap.values());
         return bankTransactions;
     }
 
