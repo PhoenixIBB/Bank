@@ -53,8 +53,8 @@ public class ImportManager {
             int i = 0;
             System.out.println();
             Scanner scan = new Scanner(System.in);
-            int number = scan.nextInt();
-//            int number = 4;
+//            int number = scan.nextInt();
+            int number = 5;
 
             fileName = fileNamesCache.get(number);
 
@@ -101,11 +101,8 @@ public class ImportManager {
                 PDFTextStripper pdfStripper = new PDFTextStripper();
                 String inputText = pdfStripper.getText(document);
                 String[] linesArray = inputText.split("\n");
-                List<String> lines = new ArrayList<>();
-                for (String line : linesArray) {
-                    if (!line.matches("[A-Za-zА-Яа-я]*-?\\s*")) lines.add(line);
-                }
-                return bankStatementParser.collectValidatedTransactions(lines);
+               List<String> lines = new ArrayList<>(Arrays.asList(linesArray));
+               return bankStatementParser.collectValidatedTransactions(lines);
             } catch (IOException e) {
                 e.printStackTrace();
             }

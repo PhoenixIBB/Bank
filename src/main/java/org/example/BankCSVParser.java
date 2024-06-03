@@ -58,13 +58,11 @@ public class BankCSVParser implements BankStatementParser {
         final List<BankTransaction> bankTransactionsValid = new ArrayList<>();
         int operationNumber = 0;
         for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
-            if(bankTransaction.validated) {
-                operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
+            operationNumber++;
+            bankTransaction.setOperationNumber(operationNumber);
+            if (bankTransaction.validated) {
                 bankTransactionsValid.add(bankTransaction);
             } else {
-                operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
                 Validator.bankTransactionsInvalid.add(bankTransaction);
             }
         }

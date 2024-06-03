@@ -1,5 +1,6 @@
 package org.example;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 
@@ -22,6 +23,62 @@ public class BankInfoDisplay {
 
         System.out.println("\nЗатрат за всё время: " + roundedTotalAmount);
     }
+
+    public void showTransactionsByNumbersRange() {
+        System.out.println("Введите диапазон номеров транзакций в формате X-Y. (Например 10-99)");
+        Scanner scan = new Scanner(System.in);
+        String inputRange = scan.nextLine();
+        String[] inputRangeValues = inputRange.split("-| - ");
+        int leftEdge = Integer.parseInt(inputRangeValues[0]);
+        int rightEdge = Integer.parseInt(inputRangeValues[1]);
+
+        for (BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransaction.getOperationNumber() >= leftEdge && bankTransaction.getOperationNumber() <= rightEdge) {
+                System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
+            }
+        }
+    }
+
+    public void showTransactionsByDatesRange() {
+        System.out.println("Введите диапазон дат транзакций в формате dd.MM.yyyy-dd.MM.yyyy. (Например 10.01.2023-12.02.2023)");
+        Scanner scan = new Scanner(System.in);
+        String inputRange = scan.nextLine();
+        String[] inputRangeValues = inputRange.split("-| - ");
+        LocalDate leftEdge = LocalDate.parse(inputRangeValues[0], BankStatementParser.DATE_PATTERN);
+        LocalDate rightEdge = LocalDate.parse(inputRangeValues[1], BankStatementParser.DATE_PATTERN);
+
+        for (BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransaction.getDate().isEqual(leftEdge) || bankTransaction.getDate().isAfter(leftEdge) && bankTransaction.getDate().isEqual(rightEdge) || bankTransaction.getDate().isBefore(rightEdge)) {
+                System.out.println(bankTransaction);
+            }
+        }
+    }
+
+    public void showTransactionsByValuesRange() {
+        System.out.println("Введите диапазон номеров транзакций в формате X-Y. (Например 1000-9990)");
+        Scanner scan = new Scanner(System.in);
+        String inputRange = scan.nextLine();
+        String[] inputRangeValues = inputRange.split("-| - ");
+        int leftEdge = Integer.parseInt(inputRangeValues[0]);
+        int rightEdge = Integer.parseInt(inputRangeValues[1]);
+
+        for (BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransaction.getOperationNumber() >= leftEdge && bankTransaction.getOperationNumber() <= rightEdge) {
+                System.out.println(bankTransaction);
+            }
+        }
+    }
+
+    public void showAllCategories () {
+        Set<String> categories = new TreeSet<>();
+        for (BankTransaction bankTransaction : bankTransactions) {
+            categories.add(bankTransaction.getDescription());
+        }
+        for(String category : categories) {
+            System.out.println(category);
+        }
+    }
+
 
     //Метод для вывода гистограммы
     public void generateGystogram() {

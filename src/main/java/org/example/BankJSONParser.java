@@ -21,12 +21,11 @@ public class BankJSONParser implements BankStatementParser {
         double amount = 0;
         String description = null;
 
-        for (String line : lines) {
+        Pattern patternDate = Pattern.compile(regexDate);
+        Pattern patternAmount = Pattern.compile(regexAmount);
+        Pattern patternDescription = Pattern.compile(regexDescription);
 
-            //if(line.matches("(\\s*)(\\{.\\w+.:)\\s*.\\d{2}-\\d{2}-\\d{4}.{2}\\s*.\\w+."));
-            Pattern patternDate = Pattern.compile(regexDate);
-            Pattern patternAmount = Pattern.compile(regexAmount);
-            Pattern patternDescription = Pattern.compile(regexDescription);
+        for (String line : lines) {
 
             Matcher matcherDate = patternDate.matcher(line);
             Matcher matcherAmount = patternAmount.matcher(line);
@@ -58,16 +57,18 @@ public class BankJSONParser implements BankStatementParser {
     }
 
     public List<BankTransaction> collectValidatedTransactions(List<String> lines) {
+
         List<BankTransaction> bankTransactionsValid = new ArrayList<>();
         int operationNumber = 0;
+
         for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
+
+            operationNumber++;
+            bankTransaction.setOperationNumber(operationNumber);
+
             if (bankTransaction.validated) {
-                operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
                 bankTransactionsValid.add(bankTransaction);
             } else {
-                operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
                 Validator.bankTransactionsInvalid.add(bankTransaction);
             }
         }

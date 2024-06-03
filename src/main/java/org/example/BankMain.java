@@ -69,9 +69,13 @@ public class BankMain {
                             4.Найти определенные транзакции;
                             5.Получить транзакцию по номеру.
                             6.Получить транзакцию по дате.
-                            7.Для просмотра некорректных транзакций.
-                            8.Для отмены и выхода из приложения.
-                            9.Для возврата к выбору файла.
+                            7.Получить транзакции в интервале номеров.
+                            8.Получить транзакции за определенный промежуток времени.
+                            9.Получить транзакции в определенном диапазоне сумм.
+                            10.Для вывода всех категорий транзакций.
+                            11.Для просмотра некорректных транзакций.
+                            12.Для отмены и выхода из приложения.
+                            13.Для возврата к выбору файла.
                             (Введите цифру.)
                             """);
 
@@ -91,17 +95,21 @@ public class BankMain {
                                     bankStatementProcessor.findTransactions(bankTransaction -> bankTransaction.getDate().getMonth() == month
                                             && bankTransaction.getAmount() <= -number);
                                 }
-                            }                        }
+                            }
+                        }
                         case 5 -> bankStatementProcessor.getTransactionByNumber(bankTransactions);
-
                         case 6 -> bankStatementProcessor.getTransactionByDate();
-                        case 7 -> Validator.checkValidatorNotifications();
-                        case 8 -> {
+                        case 7 -> bankInfoDisplay.showTransactionsByNumbersRange();
+                        case 8 -> bankInfoDisplay.showTransactionsByDatesRange();
+                        case 9 -> bankInfoDisplay.showTransactionsByValuesRange();
+                        case 10 -> bankInfoDisplay.showAllCategories();
+                        case 11 -> Validator.checkValidatorNotifications();
+                        case 12 -> {
                             scan.close();
                             restart = true;
                             exit = true;
                         }
-                        case 9 -> restart = true;
+                        case 13 -> restart = true;
                     }
                 } catch (InputMismatchException | IllegalArgumentException | NullPointerException e) {
                     System.out.println("\nОшибка ввода, введите корректный запрос.\n");
