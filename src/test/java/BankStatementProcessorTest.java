@@ -26,15 +26,11 @@ public class BankStatementProcessorTest {
     //С пустой коллекцией
     @Test
     public void shouldReturnZeroForEmptyTransactionList() {
-
-        //Инициализируем калькулятор
         bankTransactions.clear();
-        BankStatementProcessor bankStatementProcessorTest = new BankStatementProcessor(bankTransactions);
 
-        //Выполняем действие
+        BankStatementProcessor bankStatementProcessorTest = new BankStatementProcessor(bankTransactions);
         final double result = bankStatementProcessorTest.calculateTotalAmount();
 
-        //Проверяем
         Assert.assertEquals(0.0, result, 0.0);
     }
 
@@ -49,10 +45,10 @@ public class BankStatementProcessorTest {
 
         //Выполняем действие
         final double result = bankStatementProcessorTest.calculateTotalAmount();
-        final double expected = bankTransactions.getFirst().getAmount();
+        final double expected = -13500;
 
         //Проверяем
-        Assert.assertEquals(-13500, result, 0.0);
+        Assert.assertEquals(expected, result, 0.0);
     }
 
     //С дубликатами данных

@@ -1,5 +1,7 @@
 package org.example;
 
-public interface Exporter {
+public interface BankStatementExporter {
+
     String export (SummaryStatistics summaryStatistics);
+
 }

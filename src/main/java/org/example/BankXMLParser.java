@@ -68,7 +68,7 @@ public class BankXMLParser implements BankStatementParser {
 
 
     public List<BankTransaction> collectValidatedTransactions(List<String> lines) {
-            final List<BankTransaction> bankTransactionsValid = new ArrayList<>();
+        final List<BankTransaction> bankTransactionsValid = new ArrayList<>();
         int operationNumber = 0;
         for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
             if(bankTransaction.validated) {

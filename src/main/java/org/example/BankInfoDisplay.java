@@ -18,7 +18,9 @@ public class BankInfoDisplay {
 
     //Метод для вывода сводки на экран
     public void allInformation (BankStatementProcessor bankStatementProcessor) {
-        System.out.println("Затрат за всё время: " + bankStatementProcessor.calculateTotalAmount());
+        double roundedTotalAmount = (double) Math.round(bankStatementProcessor.calculateTotalAmount() * 100) / 100;
+
+        System.out.println("\nЗатрат за всё время: " + roundedTotalAmount);
     }
 
     //Метод для вывода гистограммы

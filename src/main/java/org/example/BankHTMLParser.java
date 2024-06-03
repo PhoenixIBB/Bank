@@ -35,7 +35,7 @@ public class BankHTMLParser implements BankStatementParser {
                     String lineFormatted = matcher.group(3);
 
                     if (lineFormatted.matches("\\d{2}-\\d{2}-\\d{4}") || lineFormatted.matches("\\d{2}\\.\\d{2}\\.\\d{4}")) {
-                        date = LocalDate.parse(lineFormatted, BankStatementParser.DATE_PATTERN);
+                        date = LocalDate.parse(lineFormatted, DATE_PATTERN);
                         i++;
                     } else if (lineFormatted.matches(".?\\d+")) {
                         amount = Double.parseDouble(lineFormatted);

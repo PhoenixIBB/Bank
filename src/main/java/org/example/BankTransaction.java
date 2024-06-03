@@ -25,15 +25,6 @@ public class BankTransaction implements Comparable<BankTransaction> {
             this.notification = notification;
     }
 
-    // Реализовать запись ошибок в notification
-    // V - она уже реализована в валидаторе - нужно вывести содержимое errors из notification в конце программы по вызову
-    // Проверять, чтобы в коллекцию добавлялись только валидные транзакции с true
-    // Сделать, чтобы в начале писало сколько транзакций добавлено, а сколько плохих
-    // Сделать, чтобы в конце можно было вывести все плохие транзакции
-    // Сделать корректные выводы ошибок, если неверно введен месяц и т.п.
-    // Сделать вывод "не найдено" там, где объект не найден
-    // Автовыбор формата импорта
-
     //Конструктор с валидацией входных данных
     public static BankTransaction validatedConstructor (LocalDate date, double amount, String description) {
         Validator validator = new Validator(date, amount, description);
