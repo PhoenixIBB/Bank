@@ -53,8 +53,8 @@ public class ImportManager {
             int i = 0;
             System.out.println();
             Scanner scan = new Scanner(System.in);
-//            int number = scan.nextInt();
-            int number = 5;
+            int number = scan.nextInt();
+//            int number = 5;
 
             fileName = fileNamesCache.get(number);
 

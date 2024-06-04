@@ -8,6 +8,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
     private LocalDate date;
     private double amount;
     private String description;
+    private String additionalDescription;
     private double totalPrice;
     boolean validated = false;
     private int operationNumber = 0;
@@ -25,20 +26,44 @@ public class BankTransaction implements Comparable<BankTransaction> {
             this.notification = notification;
     }
 
+    public BankTransaction(LocalDate date, double amount, String description, String additionalDescription, boolean validated, Notification notification) {
+        this.date = date;
+        this.amount = amount;
+        this.description = description;
+        this.additionalDescription = additionalDescription;
+        this.validated = validated;
+        this.notification = notification;
+    }
+
     //Конструктор с валидацией входных данных
     public static BankTransaction validatedConstructor (LocalDate date, double amount, String description) {
+
         Validator validator = new Validator(date, amount, description);
-        Notification notification;
+        Notification notification = validator.validate();
         BankTransaction.detected += 1;
-        if(!validator.validate().hasErrors()) {
+
+        if(!notification.hasErrors()) {
             added += 1;
-            notification = validator.validate();
             return new BankTransaction(date, amount, description, true, notification);
         } else {
-            notification = validator.validate();
             badTransactions += 1;
+            return new BankTransaction(date, amount, description, false, notification);
         }
-        return new BankTransaction(date, amount, description, false, notification);
+    }
+
+    public static BankTransaction validatedConstructor (LocalDate date, double amount, String description, String additionalDescription) {
+
+        Validator validator = new Validator(date, amount, description);
+        Notification notification = validator.validate();
+        BankTransaction.detected += 1;
+
+        if(!notification.hasErrors()) {
+            added += 1;
+            return new BankTransaction(date, amount, description, additionalDescription, true, notification);
+        } else {
+            badTransactions += 1;
+            return new BankTransaction(date, amount, description, additionalDescription, false, notification);
+        }
     }
 
     //Сеттеры
@@ -58,6 +83,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
     public void setOperationNumber(int operationNumber) {
         this.operationNumber = operationNumber;
     }
+    public void setAdditionalDescription(String additionalDescription) { this.additionalDescription = additionalDescription; }
 
     //Геттеры
     public LocalDate getDate() { return date; }
@@ -72,6 +98,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
     public int getOperationNumber() {
         return operationNumber;
     }
+    public String getAdditionalDescription() { return additionalDescription; }
 
     //Контракт
     @Override

@@ -29,6 +29,30 @@ public class InputConverter {
             return month;
     }
 
+//    public static String additionalDescriptionConverter (String additionalDescription) {
+//
+//        String translatedAdditionalDescription;
+//
+//        String additionalDescriptionWithoutNumbers =
+//
+//        return switch (additionalDescription) {
+//            case "PYATEROCHKA", "01", "январь", "January", "JANUARY", "Янв", "янв" -> ;
+//            case "Февраль", "02", "февраль", "February", "FEBRUARY", "Фев", "фев" -> ;
+//            case "Март", "03", "март", "March", "MARCH", "Мар", "мар" -> ;
+//            case "Апрель", "04", "апрель", "April", "APRIL", "Апр", "апр" -> ;
+//            case "Май", "05", "май", "May", "MAY" -> ;
+//            case "Июнь", "06", "июнь", "June", "JUNE", "Июн", "июн" -> ;
+//            case "Июль", "07", "июль", "July", "JULY", "Июл", "июл" -> ;
+//            case "Август", "08", "август", "August", "AUGUST", "Авг", "авг" -> ;
+//            case "Сентябрь", "09", "сентябрь", "September", "SEPTEMBER", "Сен", "сен" -> ;
+//            case "Октябрь", "10", "октябрь", "October", "OCTOBER", "Окт", "окт" -> ;
+//            case "Ноябрь", "11", "ноябрь", "November", "NOVEMBER", "Ноя", "ноя" -> ;
+//            case "Декабрь", "12", "декабрь", "December", "DECEMBER", "Дек", "дек" -> ;
+//            default -> throw new IllegalArgumentException("Ошибка конвертера. Недопустимый ввод месяца: " + additionalDescription);
+//        };
+//        return null;
+//    }
+
     // Перевод строчного представления в enum
     public static Month monthChooser (String mesyats) {
             return switch (mesyats) {

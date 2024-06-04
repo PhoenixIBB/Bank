@@ -17,6 +17,20 @@ public class BankMain {
     // 9.Рассмотреть парсинг из сберовской выписки
     // 10.Добавить работу со всеми транзакциями, а не только с расходами
 
+    // Вывод регулярных списаний. Например, подключена услуга, которая уже не нужна, можно будет её увидеть
+    // Супермаркеты (Караван)
+    // Супермаркеты (Пятерочка)
+    // Интернет-магазины (Озон)
+    // Здоровье и красота (Апрель)
+    // Прочие операции (Мобильный банк, комиссия)
+    // Отдых и развлечения (Яндекс.такси)
+    // Рестораны и кафе (Столовая ТПУ)
+    // Всё для дома (ИП)
+
+    // Вывод, сколько уходит на ту или иную выбранную категорию в месяц и в год
+    // Доработать гистограмму
+    // Возможно, доработать метод вывода в отдельном классе (например), чтобы избежать дублирования
+
 
     public static void main(String... args) throws IOException {
 
@@ -101,7 +115,7 @@ public class BankMain {
                         case 6 -> bankStatementProcessor.getTransactionByDate();
                         case 7 -> bankInfoDisplay.showTransactionsByNumbersRange();
                         case 8 -> bankInfoDisplay.showTransactionsByDatesRange();
-                        case 9 -> bankInfoDisplay.showTransactionsByValuesRange();
+                        case 9 -> bankInfoDisplay.showTransactionsByAmountsRange();
                         case 10 -> bankInfoDisplay.showAllCategories();
                         case 11 -> Validator.checkValidatorNotifications();
                         case 12 -> {

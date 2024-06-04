@@ -35,7 +35,7 @@ public class Validator {
     public Notification validate() {
         final Notification notification = new Notification();
 
-        if(this.description.length() >= 30) {
+        if (this.description.length() >= 30) {
             notification.addError("Слишком длинное описание.");
         }
 

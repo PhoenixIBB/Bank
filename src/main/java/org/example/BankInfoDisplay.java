@@ -25,21 +25,27 @@ public class BankInfoDisplay {
     }
 
     public void showTransactionsByNumbersRange() {
-        System.out.println("Введите диапазон номеров транзакций в формате X-Y. (Например 10-99)");
-        Scanner scan = new Scanner(System.in);
-        String inputRange = scan.nextLine();
-        String[] inputRangeValues = inputRange.split("-| - ");
-        int leftEdge = Integer.parseInt(inputRangeValues[0]);
-        int rightEdge = Integer.parseInt(inputRangeValues[1]);
+        try {
+            System.out.println("Введите диапазон номеров транзакций в формате X-Y. (Например 10-99)");
+            Scanner scan = new Scanner(System.in);
+            String inputRange = scan.nextLine();
+            String[] inputRangeValues = inputRange.split("-| - ");
+            int leftEdge = Integer.parseInt(inputRangeValues[0]);
+            int rightEdge = Integer.parseInt(inputRangeValues[1]);
 
-        for (BankTransaction bankTransaction : bankTransactions) {
-            if (bankTransaction.getOperationNumber() >= leftEdge && bankTransaction.getOperationNumber() <= rightEdge) {
-                System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
+            for (BankTransaction bankTransaction : bankTransactions) {
+                if (bankTransaction.getOperationNumber() >= leftEdge && bankTransaction.getOperationNumber() <= rightEdge) {
+                    System.out.println("(" + bankTransaction.getAdditionalDescription() + ").");
+                    System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
+                }
             }
+        } catch (InputMismatchException | IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Некорректный ввод. Попробуйте снова.");
         }
     }
 
     public void showTransactionsByDatesRange() {
+        try {
         System.out.println("Введите диапазон дат транзакций в формате dd.MM.yyyy-dd.MM.yyyy. (Например 10.01.2023-12.02.2023)");
         Scanner scan = new Scanner(System.in);
         String inputRange = scan.nextLine();
@@ -52,10 +58,14 @@ public class BankInfoDisplay {
                 System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
             }
         }
+    } catch (InputMismatchException | IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+        System.out.println("Некорректный ввод. Попробуйте снова.");
+    }
     }
 
-    public void showTransactionsByValuesRange() {
-        System.out.println("Введите диапазон номеров транзакций в формате X-Y. (Например 1000-9990)");
+    public void showTransactionsByAmountsRange() {
+        try {
+        System.out.println("Введите диапазон номеров транзакций в рублях в формате X-Y. (Например 1000-9990)");
         Scanner scan = new Scanner(System.in);
         String inputRange = scan.nextLine();
         String[] inputRangeValues = inputRange.split("-| - ");
@@ -63,9 +73,12 @@ public class BankInfoDisplay {
         int rightEdge = Integer.parseInt(inputRangeValues[1]);
 
         for (BankTransaction bankTransaction : bankTransactions) {
-            if (bankTransaction.getOperationNumber() >= leftEdge && bankTransaction.getOperationNumber() <= rightEdge) {
+            if (bankTransaction.getAmount() >= leftEdge && bankTransaction.getAmount() <= rightEdge) {
                 System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
             }
+        }
+    } catch (InputMismatchException | IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+        System.out.println("Некорректный ввод. Попробуйте снова.");
         }
     }
 
@@ -84,12 +97,11 @@ public class BankInfoDisplay {
         TreeMap<Month, List<BankTransaction>> sortedTransactionsMap = new TreeMap<>();
         // Добавим в мапу пары месяц-транзакции
         for (Month month : Month.values()) {
-            sortedTransactionsMap.put(month, new ArrayList<BankTransaction>());
+            sortedTransactionsMap.put(month, new ArrayList<>());
         }
         // Распределим транзакции по коллекциям в зависимости от их месяца
         for (BankTransaction bankTransaction : bankTransactions) {
-            currentMonth = bankTransaction.getDate().getMonth();
-            sortedTransactionsMap.get(currentMonth).add(bankTransaction);
+            sortedTransactionsMap.get(bankTransaction.getDate().getMonth()).add(bankTransaction);
         }
         // Для каждого месяца создадим временную коллекцию транзакций, а также инициализируем временные буферные коллекции
         for (Month month : sortedTransactionsMap.keySet()) {
@@ -119,7 +131,7 @@ public class BankInfoDisplay {
 
             for (BankTransaction bankTransaction : sortedSet) {
                 sharpQuantityVertical = Math.round(bankTransaction.getAmount() * 100 / monthTransactionsSummary);
-                System.out.print("• " + bankTransaction.getDescription());
+                System.out.print("• " + bankTransaction.getAdditionalDescription());
                 for (int i = 1; i < (30 - bankTransaction.getDescription().length()); i++) {
                     System.out.print(" ");
                 }

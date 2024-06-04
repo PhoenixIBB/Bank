@@ -10,21 +10,28 @@ public class BankPDFParser implements BankStatementParser {
 
     List<BankTransaction> bankTransactions = new ArrayList<>();
 
+    // ЗАДАЧИ:
+    // ПРОВЕРИТЬ ВСЕ ВНЕСЕННЫЕ ТРАНЗАКЦИИ НА КОРРЕКТНОСТЬ
+    // ДОБАВИТЬ МЕТОДЫ ДЛЯ РАБОТЫ С ТРАНЗАКЦИЯМИ, Т.Е. ОСНОВНОЙ ФУНКЦИОНАЛ И ПО УСПЕВАНИЮ ЗАПИСЬ РЕЗУЛЬТАТОВ ФАЙЛ ИЛИ ИНОЙ ЭКСПОРТ
+
     public List<BankTransaction> parseLinesFrom(List<String> lines) {
 
         LocalDate date = null;
         double amount = 0;
         String description = null;
+        String additionalDescription = null;
         int i = 0;
         int j = 0;
 
         String regexDate = "(\\d{2}\\.\\d{2}\\.\\d{4})\\s(\\d{2}:\\d{2})";
         String regexAmount = "^(\\+?(\\d+\\s?\\u00A0?)*\\d+,\\d{2})";
         String regexDescription = "^([А-Я][а-я]+(\\s[А-Яа-я]*)*)";
+        String regexAdditionalDescription = "^((.+)(\\s\\w?\\d*)?(\\.\\sОперация по карте))";
 
         Pattern patternDate = Pattern.compile(regexDate);
         Pattern patternAmount = Pattern.compile(regexAmount);
         Pattern patterDescription = Pattern.compile(regexDescription);
+        Pattern patternAdditionalDescription = Pattern.compile(regexAdditionalDescription);
 
         try {
             for (String line : lines) {
@@ -32,12 +39,15 @@ public class BankPDFParser implements BankStatementParser {
                 Matcher matcherDate = patternDate.matcher(line);
                 Matcher matcherAmount = patternAmount.matcher(line);
                 Matcher matcherDescription = patterDescription.matcher(line);
+                Matcher matcherAdditionalDescription = patternAdditionalDescription.matcher(line);
 
                 if (j >= 1) {
+
                     if (matcherDate.find()) {
                         date = LocalDate.parse(matcherDate.group(1), DATE_PATTERN);
                         i++;
                     }
+
                     if (date != null) {
                         if (description == null) {
                             if (matcherDescription.find()) {
@@ -45,23 +55,29 @@ public class BankPDFParser implements BankStatementParser {
                                 i++;
                             }
                         }
+                        if (additionalDescription == null) {
+                            if (matcherAdditionalDescription.find()) {
+                                String additionalDescriptionTempo = matcherAdditionalDescription.group(2);
+                                String[] additionalDescriptionArrayTempo = additionalDescriptionTempo.split("\\s\\w?\\d+$");
+                                additionalDescription = additionalDescriptionArrayTempo[0];
+                                i++;
+                            }
+                        }
                         if (matcherAmount.find()) {
                             String amountLine = matcherAmount.group(0);
-                            String amountLineInter1 = amountLine.replaceAll("\\s", "");
-                            String amountLineInter2 = amountLineInter1.replaceAll("\\u00A0", "");
-                            String amountLineFormatted = amountLineInter2.replace(",", ".");
-                            amount = Double.parseDouble(amountLineFormatted);
+                            amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
                             i++;
                         }
-                        if (i == 3) {
-                            BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description.toString());
+                        if (i == 4) {
+                            BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description, additionalDescription);
                             bankTransactions.add(bankTransaction);
                             i = 0;
                             date = null;
                             amount = 0;
                             description = null;
+                            additionalDescription = null;
                         }
-                        if (i > 3) {
+                        if (i > 4) {
                             System.out.println("Ошибка PDF-парсера. Сбился фокус с целевых данных.");
                         }
                     }
