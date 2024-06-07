@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
-public class ReportGenerator {
+public class TransactorReportGenerator {
 
     // Основная информация
     public static String userName = "";
@@ -41,7 +41,7 @@ public class ReportGenerator {
     int greenRandom;
     int blueRandom;
 
-    public ReportGenerator(List<Transaction> transactions) {
+    public TransactorReportGenerator(List<Transaction> transactions) {
         this.transactions = transactions;
     }
 
@@ -196,7 +196,7 @@ public class ReportGenerator {
 
     public void generateReport() throws IOException, InvalidFormatException {
         generateDiagram();
-        ExportManager reportExport = new ExportManager();
+        TransactorExportManager reportExport = new TransactorExportManager();
         this.collectInfo();
         reportExport.writeToWordFile(startOfPeriod, endOfPeriod, userName, roundedAmountExpense, roundedAmountIncome, mostExpensiveDescr1, mostExpensiveDescr2, mostExpensiveDescr3, mostExpensiveDescr4, mostExpensiveDescr5, mostExpensive1, mostExpensive2, mostExpensive3, mostExpensive4, mostExpensive5, redRandom, greenRandom, blueRandom);
     }

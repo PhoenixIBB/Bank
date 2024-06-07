@@ -16,59 +16,59 @@ public class Transaction implements Comparable<Transaction> {
     static int detected = 0;
     static int added = 0;
     static int badTransactions = 0;
-    Notification notification;
+    TransactorNotification transactorNotification;
     static List<Transaction> expenseTransactions = new ArrayList<>();
     static List<Transaction> incomeTransactions = new ArrayList<>();
 
     //Конструктор
-    public Transaction(LocalDate date, double amount, String description, boolean validated, Notification notification) {
+    public Transaction(LocalDate date, double amount, String description, boolean validated, TransactorNotification transactorNotification) {
             this.date = date;
             this.amount = amount;
             this.description = description;
             this.validated = validated;
-            this.notification = notification;
+            this.transactorNotification = transactorNotification;
     }
 
-    public Transaction(LocalDate date, double amount, String description, String additionalDescription, boolean validated, Notification notification) {
+    public Transaction(LocalDate date, double amount, String description, String additionalDescription, boolean validated, TransactorNotification transactorNotification) {
         this.date = date;
         this.amount = amount;
         this.description = description;
         this.additionalDescription = additionalDescription;
         this.validated = validated;
-        this.notification = notification;
+        this.transactorNotification = transactorNotification;
     }
 
     //Конструктор с валидацией входных данных
     public static Transaction validatedConstructor (LocalDate date, double amount, String description) {
 
-        Validator validator = new Validator(date, amount, description);
-        Notification notification = validator.validate();
+        TransactorValidator transactorValidator = new TransactorValidator(date, amount, description);
+        TransactorNotification transactorNotification = transactorValidator.validate();
         Transaction.detected += 1;
 
-        if(notification.hasErrors()) {
+        if(transactorNotification.hasErrors()) {
             added += 1;
-            return new Transaction(date, amount, description, true, notification);
+            return new Transaction(date, amount, description, true, transactorNotification);
         } else {
             badTransactions += 1;
-            return new Transaction(date, amount, description, false, notification);
+            return new Transaction(date, amount, description, false, transactorNotification);
         }
     }
 
     public static Transaction validatedConstructor (LocalDate date, double amount, String description, String additionalDescription) {
 
-        Validator validator = new Validator(date, amount, description, additionalDescription);
-        Notification notification = validator.validate();
+        TransactorValidator transactorValidator = new TransactorValidator(date, amount, description, additionalDescription);
+        TransactorNotification transactorNotification = transactorValidator.validate();
         Transaction.detected += 1;
 
-        if(notification.hasErrors()) {
+        if(transactorNotification.hasErrors()) {
             added += 1;
             if (description.matches("Прочие операции|Прочие расходы|Неизвестная категория(-)|Неизвестная категория")) {
                 description = additionalDescription;
             }
-            return new Transaction(date, amount, description, additionalDescription, true, notification);
+            return new Transaction(date, amount, description, additionalDescription, true, transactorNotification);
         } else {
             badTransactions += 1;
-            return new Transaction(date, amount, description, additionalDescription, false, notification);
+            return new Transaction(date, amount, description, additionalDescription, false, transactorNotification);
         }
     }
 
@@ -98,8 +98,8 @@ public class Transaction implements Comparable<Transaction> {
     public double getTotalPrice() {
         return totalPrice;
     }
-    public Notification getNotification() {
-        return notification;
+    public TransactorNotification getNotification() {
+        return transactorNotification;
     }
     public int getOperationNumber() {
         return operationNumber;

@@ -5,7 +5,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Validator {
+public class TransactorValidator {
 
     private final LocalDate date;
     private final double amount;
@@ -13,14 +13,14 @@ public class Validator {
     private final String additionalDescription;
     public static List<Transaction> transactionsInvalid = new ArrayList<>();
 
-    public Validator(LocalDate date, double amount, String description) {
+    public TransactorValidator(LocalDate date, double amount, String description) {
         this.date = date;
         this.amount = amount;
         this.description = description;
         this.additionalDescription = "Пустое значение";
     }
 
-    public Validator(LocalDate date, double amount, String description, String additionalDescription) {
+    public TransactorValidator(LocalDate date, double amount, String description, String additionalDescription) {
         this.date = date;
         this.amount = amount;
         this.description = description;
@@ -29,44 +29,44 @@ public class Validator {
 
     public static void checkValidatorNotifications () {
         int i = 0;
-        if (Validator.transactionsInvalid != null) {
-            for (Transaction transaction : Validator.transactionsInvalid) {
+        if (TransactorValidator.transactionsInvalid != null) {
+            for (Transaction transaction : TransactorValidator.transactionsInvalid) {
                 System.out.println("Некорректная транзакция №" + transaction.getOperationNumber() + ";");
                 System.out.println("Содержимое транзакции: \nДата:" + transaction.getDate() + "; Стоимость: " + transaction.getAmount() + "; Категория: " + transaction.getDescription() + ".");
-                System.out.println(transaction.notification.errorMessage());
+                System.out.println(transaction.transactorNotification.errorMessage());
             i++;
             }
         }
         if (i == 0) System.out.println("\nНекорректных транзакций нет.");
     }
 
-    public Notification validate() {
-        final Notification notification = new Notification();
+    public TransactorNotification validate() {
+        final TransactorNotification transactorNotification = new TransactorNotification();
 
         if (this.description.length() >= 30) {
-            notification.addError("Слишком длинное описание.");
+            transactorNotification.addError("Слишком длинное описание.");
         }
 
         final LocalDate parsedDate;
         try {
             parsedDate = this.date;
             if(parsedDate.isAfter(LocalDate.now())) {
-                notification.addError("Дата не должна быть будущей.");
+                transactorNotification.addError("Дата не должна быть будущей.");
             }
         } catch (DateTimeParseException e) {
-            notification.addError("Недопустимый формат даты.");
+            transactorNotification.addError("Недопустимый формат даты.");
         }
 
         final double amount;
         try {
             amount = this.amount;
             if (amount == 0) {
-                notification.addError("Стоимость не должна быть равна нулю!");
+                transactorNotification.addError("Стоимость не должна быть равна нулю!");
             }
         } catch (NumberFormatException | NullPointerException e) {
-            notification.addError("Недопустимый формат числа.");
+            transactorNotification.addError("Недопустимый формат числа.");
         }
-        return notification;
+        return transactorNotification;
     }
 
 }

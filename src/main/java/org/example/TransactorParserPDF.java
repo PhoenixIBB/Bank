@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParserPDF implements Parsers {
+public class TransactorParserPDF implements TransactorParsers {
 
     List<Transaction> transactions = new ArrayList<>();
 
@@ -22,7 +22,7 @@ public class ParserPDF implements Parsers {
             if (transaction.validated) {
                 transactionsValid.add(transaction);
             } else {
-                Validator.transactionsInvalid.add(transaction);
+                TransactorValidator.transactionsInvalid.add(transaction);
             }
         }
         return transactionsValid;
@@ -63,7 +63,7 @@ public class ParserPDF implements Parsers {
                 Matcher matcherUserName = patternUserName.matcher(line);
 
                 if (matcherUserName.find()) {
-                    ReportGenerator.userName = matcherUserName.group(0);
+                    TransactorReportGenerator.userName = matcherUserName.group(0);
                 }
 
                 if (j >= 1) {
@@ -84,14 +84,14 @@ public class ParserPDF implements Parsers {
                             if (matcherAdditionalDescription1.find()) {
                                 String additionalDescriptionTempo = matcherAdditionalDescription1.group(2).replace("*", " ");
                                 String[] additionalDescriptionArrayTempo = additionalDescriptionTempo.split("\\s\\w?\\d+\\.?$");
-                                additionalDescription = InputConverter.additionalDescriptionConverter(additionalDescriptionArrayTempo[0]);
+                                additionalDescription = TransactorInputConverter.additionalDescriptionConverter(additionalDescriptionArrayTempo[0]);
                                 i++;
                             }
                         }
                         if (additionalDescription == null && description != null && amount == 0 && !line.equals(description + "\r") && !line.equals(notAdditionalDescription)) {
                             if (matcherAdditionalDescription2.find()) {
                                 String additionalDescriptionTempo = matcherAdditionalDescription2.group(2);
-                                additionalDescription = InputConverter.additionalDescriptionConverter(additionalDescriptionTempo);
+                                additionalDescription = TransactorInputConverter.additionalDescriptionConverter(additionalDescriptionTempo);
                                 i++;
                             }
                         }

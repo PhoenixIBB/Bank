@@ -5,12 +5,12 @@ import java.time.Month;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-public class StatementProcessor {
+public class TransactorStatementProcessor {
 
     private final List<Transaction> transactions;
 
     // Конструктор
-    public StatementProcessor(List<Transaction> transactions) {
+    public TransactorStatementProcessor(List<Transaction> transactions) {
         this.transactions = transactions;
     }
 
@@ -77,7 +77,7 @@ public class StatementProcessor {
                         "Октябрь", "октябрь",
                         "Ноябрь", "ноябрь",
                         "Декабрь", "декабрь":
-                    Month month = InputConverter.monthChooser(chooseTimeValue);
+                    Month month = TransactorInputConverter.monthChooser(chooseTimeValue);
                     for (Transaction transaction : transactions) {
                         if (transaction.getDate().getMonth() == month) {
                             String category = transaction.getDescription();
@@ -135,7 +135,7 @@ public class StatementProcessor {
                         "Ноябрь", "ноябрь",
                         "Декабрь", "декабрь":
 
-                    Month month = InputConverter.monthChooser(chooseTimeValue);
+                    Month month = TransactorInputConverter.monthChooser(chooseTimeValue);
                     for (Transaction transaction : transactions) {
                         if (transaction.getDate().getMonth() == month) {
                             String category = transaction.getDescription();
@@ -173,7 +173,7 @@ public class StatementProcessor {
 
     // Инициировать выбор и вывод выбранной категории
     public void mostExpensiveOrMostCheap() {
-        final StatementProcessor statementProcessor = new StatementProcessor(transactions);
+        final TransactorStatementProcessor transactorStatementProcessor = new TransactorStatementProcessor(transactions);
         String monthName;
         String monthNameOutput;
         char firstChar;
@@ -183,16 +183,16 @@ public class StatementProcessor {
             String choose = scan.nextLine();
             switch (choose) {
                 case "1":
-                    Transaction mostExpensive = statementProcessor.mostExpensiveCategory();
-                    monthName = InputConverter.monthConverter(mostExpensive.getDate().getMonth());
+                    Transaction mostExpensive = transactorStatementProcessor.mostExpensiveCategory();
+                    monthName = TransactorInputConverter.monthConverter(mostExpensive.getDate().getMonth());
                     firstChar = monthName.charAt(0);
                     firstChar = Character.toLowerCase(firstChar);
                     monthNameOutput = firstChar + monthName.substring(1);
                     System.out.println("\nНаиболее затратная категория за " + monthNameOutput + " это: " + mostExpensive.getDescription() + ". \nЕё сумма составила: " + mostExpensive.getTotalPrice() + ".");
                     break;
                 case "2":
-                    Transaction cheapest = statementProcessor.cheapestCategory();
-                    monthName = InputConverter.monthConverter(cheapest.getDate().getMonth());
+                    Transaction cheapest = transactorStatementProcessor.cheapestCategory();
+                    monthName = TransactorInputConverter.monthConverter(cheapest.getDate().getMonth());
                     firstChar = monthName.charAt(0);
                     firstChar = Character.toLowerCase(firstChar);
                     monthNameOutput = firstChar + monthName.substring(1);
@@ -207,13 +207,13 @@ public class StatementProcessor {
     }
 
     // Найти и вывести все транзакции, дороже указанной суммы за определенный период
-    public void findTransactions(final TransactionFilter transactionFilter) {
+    public void findTransactions(final TransactorTransactionFilter transactorTransactionFilter) {
         int i = 0;
         try {
             for (Transaction transaction : transactions) {
-                if (transactionFilter.test(transaction)) {
+                if (transactorTransactionFilter.test(transaction)) {
                     i++;
-                    System.out.println("\nИскомые транзакции:\n" + "Транзакция №" + transaction.getOperationNumber() + "\nДата: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Описание: " + transaction.getDescription());
+                    System.out.println("\nИскомые транзакции:\n" + "Транзакция №" + transaction.getOperationNumber() + "\nДата: " + transaction.getDate().format(TransactorParsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Описание: " + transaction.getDescription());
                 }
             }
         } catch (NoSuchElementException e) {
@@ -233,7 +233,7 @@ public class StatementProcessor {
             int number = scan.nextInt();
             for (Transaction transaction : transactions) {
                 if (transaction.getOperationNumber() == number) {
-                    System.out.println("\nТранзакция №" + number + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
+                    System.out.println("\nТранзакция №" + number + ".\nДата транзакции: " + transaction.getDate().format(TransactorParsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                     i++;
                 }
             }
@@ -250,11 +250,11 @@ public class StatementProcessor {
             Scanner scan = new Scanner(System.in);
             System.out.println("\nВведите дату искомой транзакции в формате 'dd-MM-yyyy'.\n");
             String dateLine = scan.nextLine();
-            LocalDate date = LocalDate.parse(dateLine, Parsers.DATE_PATTERN);
+            LocalDate date = LocalDate.parse(dateLine, TransactorParsers.DATE_PATTERN);
             for (Transaction transaction : transactions) {
                 if (transaction.getDate().equals(date)) {
                     i++;
-                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
+                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(TransactorParsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                 }
             }
             if (i == 0) System.out.println("\nТранзакция не найдена.");

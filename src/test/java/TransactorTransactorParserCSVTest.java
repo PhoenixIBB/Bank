@@ -1,5 +1,5 @@
-import org.example.ParserCSV;
-import org.example.Parsers;
+import org.example.TransactorParserCSV;
+import org.example.TransactorParsers;
 import org.example.Transaction;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,10 +8,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.Parsers.DATE_PATTERN;
+import static org.example.TransactorParsers.DATE_PATTERN;
 
-public class BankCSVParserTest {
-    private final Parsers statementParser = new ParserCSV();
+public class TransactorTransactorParserCSVTest {
+    private final TransactorParsers statementParser = new TransactorParserCSV();
 
     @Test
     public void shouldParseAllCorrectLines() throws Exception {

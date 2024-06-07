@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.example.Transaction.validatedConstructor;
 
-public class ParserCSV implements Parsers {
+public class TransactorParserCSV implements TransactorParsers {
 
     public Transaction formatFrom (final String line) {
         final String[] columns = line.split(",");
@@ -20,10 +20,10 @@ public class ParserCSV implements Parsers {
                 // Преобразуем дату, если она доступна
                 try {
                     if (columns[0] != null && !columns[0].isEmpty()) {
-                        date = LocalDate.parse(columns[0], Parsers.DATE_PATTERN);
+                        date = LocalDate.parse(columns[0], TransactorParsers.DATE_PATTERN);
                     }
                 } catch (DateTimeParseException e) {
-                    date = LocalDate.parse("01-01-2300", Parsers.DATE_PATTERN);
+                    date = LocalDate.parse("01-01-2300", TransactorParsers.DATE_PATTERN);
                 }
                 // Преобразуем сумму, если она доступна
                 try {
@@ -62,7 +62,7 @@ public class ParserCSV implements Parsers {
             if (transaction.validated) {
                 transactionsValid.add(transaction);
             } else {
-                Validator.transactionsInvalid.add(transaction);
+                TransactorValidator.transactionsInvalid.add(transaction);
             }
         }
         return transactionsValid;

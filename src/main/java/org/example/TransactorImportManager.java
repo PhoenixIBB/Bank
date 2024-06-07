@@ -14,14 +14,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class ImportManager {
+public class TransactorImportManager {
 
     final String RESOURCES;
     String fileName;
     File[] files;
     List<String> fileNamesCache;
 
-    public ImportManager(String RESOURCES) {
+    public TransactorImportManager(String RESOURCES) {
         this.RESOURCES = RESOURCES;
     }
 
@@ -65,7 +65,7 @@ public class ImportManager {
     }
 
     public List<Transaction> collectInformation() throws IOException {
-        Parsers parsers = null;
+        TransactorParsers transactorParsers = null;
         String format;
         try {
             do {
@@ -76,21 +76,21 @@ public class ImportManager {
                 format = fileNameParts[1];
 
                 switch (format) {
-                    case "xml" -> parsers = new ParserXML();
-                    case "html" -> parsers = new ParserHTML();
-                    case "csv" -> parsers = new ParserCSV();
-                    case "json" -> parsers = new ParserJSON();
-                    case "pdf" -> parsers = new ParserPDF();
+                    case "xml" -> transactorParsers = new TransactorParserXML();
+                    case "html" -> transactorParsers = new TransactorParserHTML();
+                    case "csv" -> transactorParsers = new TransactorParserCSV();
+                    case "json" -> transactorParsers = new TransactorParserJSON();
+                    case "pdf" -> transactorParsers = new TransactorParserPDF();
                     default -> System.out.println("\nНеподдерживаемый формат!\n");
                 }
-            } while (parsers == null);
+            } while (transactorParsers == null);
 
             if (format.equals("xml") || format.equals("html") || format.equals("csv") || format.equals("json")) {
                 final Path path = Paths.get(RESOURCES + fileName);
                 final List<String> lines = Files.readAllLines(path);
                 System.out.println("Сборка и сортировка транзакций...");
                 System.out.println("Строк собрано: " + lines.size() + ".");
-                return parsers.collectValidatedTransactions(lines);
+                return transactorParsers.collectValidatedTransactions(lines);
 
             } else {
                 File file = new File(RESOURCES + fileName);
@@ -100,7 +100,7 @@ public class ImportManager {
                     String inputText = pdfStripper.getText(document);
                     String[] linesArray = inputText.split("\n");
                     List<String> lines = new ArrayList<>(Arrays.asList(linesArray));
-                    return parsers.collectValidatedTransactions(lines);
+                    return transactorParsers.collectValidatedTransactions(lines);
                 } catch (IOException e) {
                     System.out.println("Ошибка импорта. Не удалось загрузить PDF-файл.");;
                 }

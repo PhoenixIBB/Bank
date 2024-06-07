@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class ParserHTML implements Parsers {
+public class TransactorParserHTML implements TransactorParsers {
 
     public List<Transaction> parseLinesFrom (List<String> lines) {
 

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParserPDFSecond implements Parsers {
+public class TransactorParserPDFSecond implements TransactorParsers {
 
     List<Transaction> transactions = new ArrayList<>();
 
@@ -36,7 +36,7 @@ public class ParserPDFSecond implements Parsers {
             Matcher matcherDescription = patternDescription.matcher(line);
 
             if (matcherDate.find()) {
-                date = LocalDate.parse(matcherDate.group(2), Parsers.DATE_PATTERN);
+                date = LocalDate.parse(matcherDate.group(2), TransactorParsers.DATE_PATTERN);
                 i++;
                 j = 1;
             }
@@ -79,7 +79,7 @@ public class ParserPDFSecond implements Parsers {
             } else {
                 operationNumber++;
                 transaction.setOperationNumber(operationNumber);
-                Validator.transactionsInvalid.add(transaction);
+                TransactorValidator.transactionsInvalid.add(transaction);
             }
         }
         return transactionsValid;

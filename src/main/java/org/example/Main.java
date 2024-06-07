@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private final ImportManager importManager;
+    private final TransactorImportManager transactorImportManager;
 
     // 3.Покрыть большую часть кода тестами
     // 5.Реализовать поддержку экспорта HTML, CSV, JSON, XML
@@ -26,7 +26,7 @@ public class Main {
 
     //Конструктор
     public Main() {
-        this.importManager = new ImportManager("src/main/resources/");
+        this.transactorImportManager = new TransactorImportManager("src/main/resources/");
     }
 
     // Главный управляющий метод
@@ -42,12 +42,12 @@ public class Main {
             Transaction.added = 0;
             Transaction.badTransactions = 0;
             List<Transaction> transactions;
-            transactions = importManager.collectInformation();
+            transactions = transactorImportManager.collectInformation();
             // Формирование объекта вывода транзакций
-            InfoDisplay infoDisplay = new InfoDisplay(transactions);
+            TransactorInfoDisplay transactorInfoDisplay = new TransactorInfoDisplay(transactions);
             // Объект для обработки транзакций
-            StatementProcessor statementProcessor = new StatementProcessor(transactions);
-            ReportGenerator reportGenerator = new ReportGenerator(transactions);
+            TransactorStatementProcessor transactorStatementProcessor = new TransactorStatementProcessor(transactions);
+            TransactorReportGenerator transactorReportGenerator = new TransactorReportGenerator(transactions);
 
             restart = false;
 
@@ -79,16 +79,16 @@ public class Main {
                     // Обработка выбора и запроса
                     int choice = scan.nextInt();
                     switch (choice) {
-                        case 1 -> reportGenerator.generateReport();
-                        case 2 -> statementProcessor.mostExpensiveOrMostCheap();
-                        case 3 -> statementProcessor.getTransactionByNumber(transactions);
-                        case 4 -> statementProcessor.getTransactionByDate();
-                        case 5 -> infoDisplay.showTransactionsByNumbersRange();
-                        case 6 -> infoDisplay.showTransactionsByDatesRange();
-                        case 7 -> infoDisplay.showTransactionsByAmountsRange();
-                        case 8 -> reportGenerator.generateDiagram();
-                        case 9 -> infoDisplay.showAllDescriptions();
-                        case 10 -> Validator.checkValidatorNotifications();
+                        case 1 -> transactorReportGenerator.generateReport();
+                        case 2 -> transactorStatementProcessor.mostExpensiveOrMostCheap();
+                        case 3 -> transactorStatementProcessor.getTransactionByNumber(transactions);
+                        case 4 -> transactorStatementProcessor.getTransactionByDate();
+                        case 5 -> transactorInfoDisplay.showTransactionsByNumbersRange();
+                        case 6 -> transactorInfoDisplay.showTransactionsByDatesRange();
+                        case 7 -> transactorInfoDisplay.showTransactionsByAmountsRange();
+                        case 8 -> transactorReportGenerator.generateDiagram();
+                        case 9 -> transactorInfoDisplay.showAllDescriptions();
+                        case 10 -> TransactorValidator.checkValidatorNotifications();
                         case 11 -> {
                             scan.close();
                             restart = true;
@@ -98,10 +98,10 @@ public class Main {
                             transactions.clear();
                             Transaction.expenseTransactions.clear();
                             Transaction.incomeTransactions.clear();
-                            Validator.transactionsInvalid.clear();
+                            TransactorValidator.transactionsInvalid.clear();
                             restart = true;
                         }
-                        case 13 -> infoDisplay.showExpensesByDescription();
+                        case 13 -> transactorInfoDisplay.showExpensesByDescription();
                     }
                 } catch (InputMismatchException | IllegalArgumentException | NullPointerException e) {
                     System.out.println("\nОшибка ввода, введите корректный запрос.\n");

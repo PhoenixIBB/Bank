@@ -3,7 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Notification {
+public class TransactorNotification {
     private final List<String> errors = new ArrayList<>();
 
     public void addError(final String message) {

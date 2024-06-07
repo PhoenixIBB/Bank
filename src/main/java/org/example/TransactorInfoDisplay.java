@@ -3,13 +3,13 @@ package org.example;
 import java.time.LocalDate;
 import java.util.*;
 
-public class InfoDisplay {
+public class TransactorInfoDisplay {
 
     //Поля
     private final List<Transaction> transactions;
 
     //Конструктор
-    public InfoDisplay(List<Transaction> transactions) {
+    public TransactorInfoDisplay(List<Transaction> transactions) {
         this.transactions = transactions;
     }
 
@@ -49,7 +49,7 @@ public class InfoDisplay {
 
             for (Transaction transaction : transactions) {
                 if (transaction.getOperationNumber() >= leftEdge && transaction.getOperationNumber() <= rightEdge) {
-                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
+                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(TransactorParsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                 }
             }
         } catch (InputMismatchException | IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
@@ -63,12 +63,17 @@ public class InfoDisplay {
             Scanner scan = new Scanner(System.in);
             String inputRange = scan.nextLine();
             String[] inputRangeValues = inputRange.split("-| - ");
-            LocalDate leftEdge = LocalDate.parse(inputRangeValues[0], Parsers.DATE_PATTERN);
-            LocalDate rightEdge = LocalDate.parse(inputRangeValues[1], Parsers.DATE_PATTERN);
+            LocalDate leftEdge = LocalDate.parse(inputRangeValues[0], TransactorParsers.DATE_PATTERN);
+            LocalDate rightEdge = LocalDate.parse(inputRangeValues[1], TransactorParsers.DATE_PATTERN);
+            transactions.sort((s1,s2) -> {
+                if(s1.getDate().isAfter(s2.getDate())) return 1;
+                else if (s1.getDate().isBefore(s2.getDate())) return -1;
+                else return 0;
+            });
 
             for (Transaction transaction : transactions) {
                 if (transaction.getDate().isEqual(leftEdge) || transaction.getDate().isAfter(leftEdge) && transaction.getDate().isEqual(rightEdge) || transaction.getDate().isBefore(rightEdge)) {
-                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
+                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(TransactorParsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                 }
             }
         } catch (InputMismatchException | IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
@@ -87,7 +92,7 @@ public class InfoDisplay {
 
             for (Transaction transaction : transactions) {
                 if (transaction.getAmount() >= leftEdge && transaction.getAmount() <= rightEdge) {
-                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
+                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(TransactorParsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                 }
             }
         } catch (InputMismatchException | IllegalArgumentException | ArrayIndexOutOfBoundsException | NullPointerException e) {

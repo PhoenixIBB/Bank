@@ -1,6 +1,6 @@
 package org.example;
 
 @FunctionalInterface
-public interface TransactionFilter {
+public interface TransactorTransactionFilter {
     boolean test (Transaction transaction);
 }

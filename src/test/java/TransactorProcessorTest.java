@@ -1,4 +1,4 @@
-import org.example.StatementProcessor;
+import org.example.TransactorStatementProcessor;
 import org.example.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatementProcessorTest {
+public class TransactorProcessorTest {
     List<Transaction> transactions;
     private static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     @Before
@@ -28,8 +28,8 @@ public class StatementProcessorTest {
     public void shouldReturnZeroForEmptyTransactionList() {
         transactions.clear();
 
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
-        final double result = statementProcessorTest.calculateTotalAmount();
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
+        final double result = transactorStatementProcessorTest.calculateTotalAmount();
 
         Assert.assertEquals(0.0, result, 0.0);
     }
@@ -41,10 +41,10 @@ public class StatementProcessorTest {
         //Инициализируем калькулятор
         transactions.clear();
         transactions.add(new Transaction(LocalDate.parse("27-05-2024", DATE_PATTERN),-13500,"Одежда",  true, null));
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount();
+        final double result = transactorStatementProcessorTest.calculateTotalAmount();
         final double expected = -13500;
 
         //Проверяем
@@ -60,10 +60,10 @@ public class StatementProcessorTest {
         transactions.add(new Transaction(LocalDate.parse("27-05-2024", DATE_PATTERN),-13500,"Одежда", true, null));
         transactions.add(new Transaction(LocalDate.parse("13-05-2024", DATE_PATTERN),-13500,"Одежда", true, null));
         transactions.add(new Transaction(LocalDate.parse("27-05-2024", DATE_PATTERN),-3500,"Одежда", true, null));
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount();
+        final double result = transactorStatementProcessorTest.calculateTotalAmount();
         double expected = 0;
         for (Transaction transaction : transactions) {
             expected += transaction.getAmount();
@@ -82,10 +82,10 @@ public class StatementProcessorTest {
         transactions.add(new Transaction(LocalDate.parse("27-05-2024", DATE_PATTERN),-13500,"Одежда", true, null));
         transactions.add(new Transaction(LocalDate.parse("27-05-2024", DATE_PATTERN),-13500,"Одежда", true, null));
         transactions.add(new Transaction(LocalDate.parse("27-05-2024", DATE_PATTERN),-13500,"Одежда", true, null));
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount();
+        final double result = transactorStatementProcessorTest.calculateTotalAmount();
         double expected = 0;
         for (Transaction transaction : transactions) {
             expected += transaction.getAmount();
@@ -99,10 +99,10 @@ public class StatementProcessorTest {
     public void shouldCalculateTotalAmountFromSameData () {
 
         //Инициализируем калькулятор
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount();
+        final double result = transactorStatementProcessorTest.calculateTotalAmount();
         double expected = 0;
         for (final Transaction transaction : transactions) {
                 expected += transaction.getAmount();
@@ -118,11 +118,11 @@ public class StatementProcessorTest {
     public void shouldCalculateTotalAmountFromMonth () {
 
         //Инициализируем калькулятор
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
         Month month = Month.APRIL;
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount(month);
+        final double result = transactorStatementProcessorTest.calculateTotalAmount(month);
         double expected = 0;
         for (final Transaction transaction : transactions) {
             if (transaction.getDate().getMonth() == month) {
@@ -140,11 +140,11 @@ public class StatementProcessorTest {
     public void shouldCalculateTotalAmountFromCategory () {
 
         //Инициализируем калькулятор
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
         String category = "Продукты";
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount(category);
+        final double result = transactorStatementProcessorTest.calculateTotalAmount(category);
         double expected = 0;
         for (final Transaction transaction : transactions) {
             if(transaction.getDescription().equals(category)) {
@@ -162,12 +162,12 @@ public class StatementProcessorTest {
     public void shouldCalculateTotalAmountFromMonthAndCategory () {
 
         //Инициализируем калькулятор
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
         Month month = Month.AUGUST;
         String category = "Одежда";
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount(month, category);
+        final double result = transactorStatementProcessorTest.calculateTotalAmount(month, category);
         double expected = 0;
         for (final Transaction transaction : transactions) {
             if(transaction.getDate().getMonth() == month && transaction.getDescription().equals(category)) {
@@ -184,12 +184,12 @@ public class StatementProcessorTest {
     public void shouldCalculateTotalAmountFromYearAndCategory () {
 
         //Инициализируем калькулятор
-        StatementProcessor statementProcessorTest = new StatementProcessor(transactions);
+        TransactorStatementProcessor transactorStatementProcessorTest = new TransactorStatementProcessor(transactions);
         int year = 2024;
         String category = "Транспорт";
 
         //Выполняем действие
-        final double result = statementProcessorTest.calculateTotalAmount(year, category);
+        final double result = transactorStatementProcessorTest.calculateTotalAmount(year, category);
         double expected = 0;
         for (final Transaction transaction : transactions) {
             if (transaction.getDate().getYear() == year && transaction.getDescription().equals(category)) {

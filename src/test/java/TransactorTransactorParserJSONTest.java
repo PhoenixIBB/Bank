@@ -1,5 +1,5 @@
-import org.example.ParserJSON;
-import org.example.Parsers;
+import org.example.TransactorParserJSON;
+import org.example.TransactorParsers;
 import org.example.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BankJSONParserTest {
-    private final Parsers statementParser = new ParserJSON();
+public class TransactorTransactorParserJSONTest {
+    private final TransactorParsers statementParser = new TransactorParserJSON();
     List<String> lines;
 
 
@@ -30,9 +30,9 @@ public class BankJSONParserTest {
 
         List<Transaction> result = statementParser.parseLinesFrom(lines);
         List<Transaction> expected = new ArrayList<>();
-        expected.add(new Transaction(LocalDate.parse("01-01-2023", Parsers.DATE_PATTERN), -250, "Страховка", true, null));
-        expected.add(new Transaction(LocalDate.parse("08-01-2023", Parsers.DATE_PATTERN), -240, "Коммунальные услуги", true, null));
-        expected.add(new Transaction(LocalDate.parse("11-01-2023", Parsers.DATE_PATTERN), -130, "Продукты", true, null));
+        expected.add(new Transaction(LocalDate.parse("01-01-2023", TransactorParsers.DATE_PATTERN), -250, "Страховка", true, null));
+        expected.add(new Transaction(LocalDate.parse("08-01-2023", TransactorParsers.DATE_PATTERN), -240, "Коммунальные услуги", true, null));
+        expected.add(new Transaction(LocalDate.parse("11-01-2023", TransactorParsers.DATE_PATTERN), -130, "Продукты", true, null));
 
         Assert.assertEquals(expected.get(0), result.get(0));
         Assert.assertEquals(expected.get(1), result.get(1));
@@ -52,7 +52,7 @@ public class BankJSONParserTest {
 
         List<Transaction> result = statementParser.parseLinesFrom(lines);
         List<Transaction> expected = new ArrayList<>();
-        expected.add(new Transaction(LocalDate.parse("06-01-2023", Parsers.DATE_PATTERN), -290, "Одежда", true, null));
+        expected.add(new Transaction(LocalDate.parse("06-01-2023", TransactorParsers.DATE_PATTERN), -290, "Одежда", true, null));
 
         Assert.assertEquals(expected.get(0), result.get(0));
     }

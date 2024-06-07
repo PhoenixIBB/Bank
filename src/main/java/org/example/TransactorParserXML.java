@@ -9,7 +9,7 @@ import java.util.regex.PatternSyntaxException;
 
 import static org.example.Transaction.validatedConstructor;
 
-public class ParserXML implements Parsers {
+public class TransactorParserXML implements TransactorParsers {
 
     public List<Transaction> parseLinesFrom(List<String> lines) {
 
@@ -41,7 +41,7 @@ public class ParserXML implements Parsers {
                     }
                 }
                 if (fields.size() == 3) {
-                    LocalDate date = LocalDate.parse(fields.poll(), Parsers.DATE_PATTERN);
+                    LocalDate date = LocalDate.parse(fields.poll(), TransactorParsers.DATE_PATTERN);
                     double amount = Double.parseDouble(fields.poll());
                     String description = fields.poll();
                     transactions.add(validatedConstructor(date, amount, description));
@@ -77,7 +77,7 @@ public class ParserXML implements Parsers {
             } else {
                 operationNumber++;
                 transaction.setOperationNumber(operationNumber);
-                Validator.transactionsInvalid.add(transaction);
+                TransactorValidator.transactionsInvalid.add(transaction);
             }
         }
         return transactionsValid;

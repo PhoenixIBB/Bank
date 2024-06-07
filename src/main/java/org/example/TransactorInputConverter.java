@@ -1,10 +1,8 @@
 package org.example;
 
 import java.time.Month;
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
-public class InputConverter {
+public class TransactorInputConverter {
 
     public static String additionalDescriptionConverter(String additionalDescription) {
 

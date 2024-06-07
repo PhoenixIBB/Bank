@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ParserJSON implements Parsers {
+public class TransactorParserJSON implements TransactorParsers {
 
     List<Transaction> transactions = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public class ParserJSON implements Parsers {
             if (transaction.validated) {
                 transactionsValid.add(transaction);
             } else {
-                Validator.transactionsInvalid.add(transaction);
+                TransactorValidator.transactionsInvalid.add(transaction);
             }
         }
         return transactionsValid;

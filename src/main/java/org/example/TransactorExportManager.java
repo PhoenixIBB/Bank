@@ -13,7 +13,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 
-public class ExportManager {
+public class TransactorExportManager {
 
     public void writeToWordFile(LocalDate startOfPeriod, LocalDate endOfPeriod, String userName, double roundedAmountExpense, double roundedAmountIncome, String mostExpensiveDescr1, String mostExpensiveDescr2, String mostExpensiveDescr3, String mostExpensiveDescr4, String mostExpensiveDescr5, double mostExpensive1, double mostExpensive2, double mostExpensive3, double mostExpensive4, double mostExpensive5, int redRandom, int greenRandom, int blueRandom) throws IOException, InvalidFormatException {
 
