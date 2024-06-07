@@ -18,7 +18,7 @@ public class TransactorImportManager {
 
     final String RESOURCES;
     String fileName;
-    File[] files;
+    File[] files = null;
     List<String> fileNamesCache;
 
     public TransactorImportManager(String RESOURCES) {
@@ -31,7 +31,7 @@ public class TransactorImportManager {
         try {
             if (directory.exists() && directory.isDirectory()) {
 
-                File[] files = directory.listFiles();
+                files = directory.listFiles();
                 fileNamesCache = new ArrayList<>();
                 fileNamesCache.add("Нулевой объект.");
                 System.out.println("\nСодержимое текущей директории \"" + RESOURCES + "\": \n");
@@ -49,7 +49,6 @@ public class TransactorImportManager {
     public String chooseTheFile() {
 
         try {
-            int i = 0;
             System.out.println();
             Scanner scan = new Scanner(System.in);
             int number = scan.nextInt();

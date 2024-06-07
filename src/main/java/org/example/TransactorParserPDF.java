@@ -122,7 +122,7 @@ public class TransactorParserPDF implements TransactorParsers {
                         }
                     }
                 }
-                if (line.matches("Сумма в валюте операции²\r")) j++;
+                if (line.matches("([А-Яа-я]+\\s)?Сумма в валюте операции²\r|([А-Яа-я]+\\s)?Сумма в валюте счёта\r")) j++;
             }
         } catch (Exception e) {
             System.out.println("Ошибка PDF-парсера. Ошибка при сборке транзакций: " + e.getClass());
