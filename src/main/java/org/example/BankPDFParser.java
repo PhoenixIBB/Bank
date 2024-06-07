@@ -1,18 +1,15 @@
 package org.example;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static org.example.BankTransaction.expenseTransactions;
+import static org.example.BankTransaction.incomeTransactions;
 
 public class BankPDFParser implements BankStatementParser {
 
     List<BankTransaction> bankTransactions = new ArrayList<>();
-
-    // ЗАДАЧИ:
-    // ПРОВЕРИТЬ ВСЕ ВНЕСЕННЫЕ ТРАНЗАКЦИИ НА КОРРЕКТНОСТЬ
-    // ДОБАВИТЬ МЕТОДЫ ДЛЯ РАБОТЫ С ТРАНЗАКЦИЯМИ, Т.Е. ОСНОВНОЙ ФУНКЦИОНАЛ И ПО УСПЕВАНИЮ ЗАПИСЬ РЕЗУЛЬТАТОВ ФАЙЛ ИЛИ ИНОЙ ЭКСПОРТ
 
     public List<BankTransaction> parseLinesFrom(List<String> lines) {
 
@@ -27,11 +24,13 @@ public class BankPDFParser implements BankStatementParser {
         String regexAmount = "^(\\+?(\\d+\\s?\\u00A0?)*\\d+,\\d{2})";
         String regexDescription = "^([А-Я][а-я]+(\\s[А-Яа-я]*)*)";
         String regexAdditionalDescription = "^((.+)(\\s\\w?\\d*)?(\\.\\sОперация по карте))";
+        String regexUserName = "^([А-Я][а-я]+ [А-Я][а-я]+ [А-Я][а-я]+$)";
 
         Pattern patternDate = Pattern.compile(regexDate);
         Pattern patternAmount = Pattern.compile(regexAmount);
         Pattern patterDescription = Pattern.compile(regexDescription);
         Pattern patternAdditionalDescription = Pattern.compile(regexAdditionalDescription);
+        Pattern patternUserName = Pattern.compile(regexUserName);
 
         try {
             for (String line : lines) {
@@ -40,6 +39,11 @@ public class BankPDFParser implements BankStatementParser {
                 Matcher matcherAmount = patternAmount.matcher(line);
                 Matcher matcherDescription = patterDescription.matcher(line);
                 Matcher matcherAdditionalDescription = patternAdditionalDescription.matcher(line);
+                Matcher matcherUserName = patternUserName.matcher(line);
+
+                if (matcherUserName.find()) {
+                    BankReportGenerator.userName = matcherUserName.group(0);
+                }
 
                 if (j >= 1) {
 
@@ -47,7 +51,6 @@ public class BankPDFParser implements BankStatementParser {
                         date = LocalDate.parse(matcherDate.group(1), DATE_PATTERN);
                         i++;
                     }
-
                     if (date != null) {
                         if (description == null) {
                             if (matcherDescription.find()) {
@@ -57,19 +60,29 @@ public class BankPDFParser implements BankStatementParser {
                         }
                         if (additionalDescription == null) {
                             if (matcherAdditionalDescription.find()) {
-                                String additionalDescriptionTempo = matcherAdditionalDescription.group(2);
-                                String[] additionalDescriptionArrayTempo = additionalDescriptionTempo.split("\\s\\w?\\d+$");
-                                additionalDescription = additionalDescriptionArrayTempo[0];
+                                String additionalDescriptionTempo = matcherAdditionalDescription.group(2).replace("*", " ");
+                                String[] additionalDescriptionArrayTempo = additionalDescriptionTempo.split("\\s\\w?\\d+\\.?$");
+                                additionalDescription = InputConverter.additionalDescriptionConverter(additionalDescriptionArrayTempo[0]);
                                 i++;
                             }
                         }
                         if (matcherAmount.find()) {
                             String amountLine = matcherAmount.group(0);
-                            amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
+                            if (amountLine.matches("\\+(\\d+\\s?\\u00A0?)*\\d+,\\d{2}")) {
+                                amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
+                            } else {
+                                amountLine = "-" + amountLine;
+                                amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
+                            }
                             i++;
                         }
                         if (i == 4) {
                             BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description, additionalDescription);
+                            if (bankTransaction.getAmount() < 0 && !bankTransaction.getDescription().matches("Банковские операции")) {
+                                BankTransaction.expenseTransactions.add(bankTransaction);
+                            } else {
+                                BankTransaction.incomeTransactions.add(bankTransaction);
+                            }
                             bankTransactions.add(bankTransaction);
                             i = 0;
                             date = null;
@@ -87,17 +100,11 @@ public class BankPDFParser implements BankStatementParser {
         } catch (Exception e) {
             System.out.println("Ошибка PDF-парсера. Ошибка при сборке транзакций: " + e.getClass());
         }
-//        TreeMap<Integer, BankTransaction> bankTransactionTreeMap = new TreeMap<Integer, BankTransaction>((bankTransactionFirst, bankTransactionSecond) -> {
-//            if (bankTransactionFirst.getDate().isBefore(bankTransactionSecond.getDate())) return 1;
-//            else if (bankTransactionFirst.getDate().isAfter(bankTransactionSecond.getDate())) return -1;
-//            else return 0;
-//        });
         bankTransactions.sort((bankTransactionFirst, bankTransactionSecond) -> {
             if (bankTransactionFirst.getDate().isAfter(bankTransactionSecond.getDate())) return 1;
             else if (bankTransactionFirst.getDate().isBefore(bankTransactionSecond.getDate())) return -1;
             else return 0;
         });
-//        List<BankTransaction> bankTransactionsSorted = new ArrayList<BankTransaction>(bankTransactionTreeMap.values());
         return bankTransactions;
     }
 

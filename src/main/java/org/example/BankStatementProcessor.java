@@ -32,13 +32,11 @@ public class BankStatementProcessor {
     }
 
     // Суммирует транзакции в заданной категории за указанный месяц
-    public double calculateTotalAmount(final Month month, final String category) {
-        return calculateTotalAmount(month, category, 0);
+    public double calculateTotalAmount(final Month month, final String category) { return calculateTotalAmount(month, category, 0);
     }
 
     // Суммирует все транзакции в заданной категории за указанный год
-    public double calculateTotalAmount(final int year, final String category) {
-        return calculateTotalAmount(null, category, year);
+    public double calculateTotalAmount(final int year, final String category) { return calculateTotalAmount(null, category, year);
     }
 
     // Обслуживающий перегруженный метод

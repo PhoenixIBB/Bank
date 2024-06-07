@@ -8,15 +8,24 @@ import java.util.regex.Pattern;
 
 public class Validator {
 
-    final private LocalDate date;
-    final private double amount;
-    final private String description;
+    private LocalDate date;
+    private double amount;
+    private String description;
+    private String additionalDescription;
     public static List<BankTransaction> bankTransactionsInvalid = new ArrayList<>();
 
     public Validator(LocalDate date, double amount, String description) {
         this.date = date;
         this.amount = amount;
         this.description = description;
+        this.additionalDescription = "Пустое значение";
+    }
+
+    public Validator(LocalDate date, double amount, String description, String additionalDescription) {
+        this.date = date;
+        this.amount = amount;
+        this.description = description;
+        this.additionalDescription = additionalDescription;
     }
 
     public static void checkValidatorNotifications () {

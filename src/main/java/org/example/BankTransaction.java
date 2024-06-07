@@ -1,6 +1,7 @@
 package org.example;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +17,8 @@ public class BankTransaction implements Comparable<BankTransaction> {
     static int added = 0;
     static int badTransactions = 0;
     Notification notification;
+    static List<BankTransaction> expenseTransactions = new ArrayList<>();
+    static List<BankTransaction> incomeTransactions = new ArrayList<>();
 
     //Конструктор
     public BankTransaction(LocalDate date, double amount, String description, boolean validated, Notification notification) {
@@ -53,12 +56,15 @@ public class BankTransaction implements Comparable<BankTransaction> {
 
     public static BankTransaction validatedConstructor (LocalDate date, double amount, String description, String additionalDescription) {
 
-        Validator validator = new Validator(date, amount, description);
+        Validator validator = new Validator(date, amount, description, additionalDescription);
         Notification notification = validator.validate();
         BankTransaction.detected += 1;
 
         if(!notification.hasErrors()) {
             added += 1;
+            if (description.matches("Прочие операции\\r?\\n?|Прочие расходы\\r?\\n?|Неизвестная категория(-)|Неизвестная категория")) {
+                description = additionalDescription;
+            }
             return new BankTransaction(date, amount, description, additionalDescription, true, notification);
         } else {
             badTransactions += 1;

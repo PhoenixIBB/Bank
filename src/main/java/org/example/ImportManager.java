@@ -54,13 +54,12 @@ public class ImportManager {
             System.out.println();
             Scanner scan = new Scanner(System.in);
             int number = scan.nextInt();
-//            int number = 5;
 
             fileName = fileNamesCache.get(number);
 
         } catch (NullPointerException e) {
             System.out.println("Ошибка импорта. Возможно, в директории отсутствуют файлы или их форматы недопустимы.");
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             System.out.println("Ошибка импорта. Отсутствует файл с заданным индексом.");
         }
         return fileName;
@@ -69,44 +68,47 @@ public class ImportManager {
     public List<BankTransaction> collectInformation() throws IOException {
         BankStatementParser bankStatementParser = null;
         String format;
+        try {
+            do {
+                System.out.println("Выберите файл в директории. (введите его номер из списка)");
+                showDirectory();
+                String[] fileNameParts = chooseTheFile().split("\\.");
+                System.out.println("\nИмя выбранного файла: " + fileNameParts[0] + "\nФормат выбранного файла: " + fileNameParts[1] + "\n");
+                format = fileNameParts[1];
 
-        do {
-            System.out.println("Выберите файл в директории. (введите его номер из списка)");
-            showDirectory();
-            String[] fileNameParts = chooseTheFile().split("\\.");
-            System.out.println("\nИмя выбранного файла: " + fileNameParts[0] + "\nФормат выбранного файла: " + fileNameParts[1] + "\n");
-            format = fileNameParts[1];
+                switch (format) {
+                    case "xml" -> bankStatementParser = new BankXMLParser();
+                    case "html" -> bankStatementParser = new BankHTMLParser();
+                    case "csv" -> bankStatementParser = new BankCSVParser();
+                    case "json" -> bankStatementParser = new BankJSONParser();
+                    case "pdf" -> bankStatementParser = new BankPDFParser();
+                    default -> System.out.println("\nНеподдерживаемый формат!\n");
+                }
+            } while (bankStatementParser == null);
 
-            switch (format) {
-                case "xml" -> bankStatementParser = new BankXMLParser();
-                case "html" -> bankStatementParser = new BankHTMLParser();
-                case "csv" -> bankStatementParser = new BankCSVParser();
-                case "json" -> bankStatementParser = new BankJSONParser();
-                case "pdf" -> bankStatementParser = new BankPDFParser();
-                default -> System.out.println("\nНеподдерживаемый формат!\n");
+            if (format.equals("xml") || format.equals("html") || format.equals("csv") || format.equals("json")) {
+                final Path path = Paths.get(RESOURCES + fileName);
+                final List<String> lines = Files.readAllLines(path);
+                System.out.println("Сборка и сортировка транзакций...");
+                System.out.println("Строк собрано: " + lines.size() + ".");
+                return bankStatementParser.collectValidatedTransactions(lines);
+
+            } else if (format.equals("pdf")) {
+                File file = new File(RESOURCES + fileName);
+
+                try (PDDocument document = Loader.loadPDF(file)) {
+                    PDFTextStripper pdfStripper = new PDFTextStripper();
+                    String inputText = pdfStripper.getText(document);
+                    String[] linesArray = inputText.split("\n");
+                    List<String> lines = new ArrayList<>(Arrays.asList(linesArray));
+                    return bankStatementParser.collectValidatedTransactions(lines);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        } while (bankStatementParser == null);
-
-        if (format.equals("xml") || format.equals("html") || format.equals("csv") || format.equals("json")) {
-            final Path path = Paths.get(RESOURCES + fileName);
-            final List<String> lines = Files.readAllLines(path);
-            System.out.println("Сборка и сортировка транзакций...");
-            System.out.println("Строк собрано: " + lines.size() + ".");
-            return bankStatementParser.collectValidatedTransactions(lines);
-
-        } else if (format.equals("pdf")) {
-            File file = new File(RESOURCES + fileName);
-
-            try (PDDocument document = Loader.loadPDF(file)) {
-                PDFTextStripper pdfStripper = new PDFTextStripper();
-                String inputText = pdfStripper.getText(document);
-                String[] linesArray = inputText.split("\n");
-               List<String> lines = new ArrayList<>(Arrays.asList(linesArray));
-               return bankStatementParser.collectValidatedTransactions(lines);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            System.out.println("Ошибка импорта.");
         }
-        return null;
+            return null;
+        }
     }
-}

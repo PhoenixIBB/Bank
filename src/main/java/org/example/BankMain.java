@@ -1,5 +1,8 @@
 package org.example;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.jfree.data.general.DefaultPieDataset;
+
 import java.io.IOException;
 import java.time.Month;
 import java.util.InputMismatchException;
@@ -33,7 +36,6 @@ public class BankMain {
 
 
     public static void main(String... args) throws IOException {
-
         BankMain bankAnalyzer = new BankMain();
         bankAnalyzer.analyze();
 
@@ -64,6 +66,7 @@ public class BankMain {
             BankInfoDisplay bankInfoDisplay = new BankInfoDisplay(bankTransactions);
             // Объект для обработки транзакций
             BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
+            BankReportGenerator bankReportGenerator = new BankReportGenerator(bankTransactions);
 
             restart = false;
 
@@ -77,19 +80,19 @@ public class BankMain {
                 try {
                     System.out.println("""
                             \nЧто вы хотели бы сделать?
-                            1.Вывести всю информацию по моим транзакциям;
-                            2.Вывести информацию о транзакциях в формате гистрограммы;
+                            1.Вывести мини-отчет по моим транзакциям;
                             3.Узнать наиболее или наименее затратную статью расходов за какой-то промежуток времени;
-                            4.Найти определенные транзакции;
                             5.Получить транзакцию по номеру.
                             6.Получить транзакцию по дате.
                             7.Получить транзакции в интервале номеров.
                             8.Получить транзакции за определенный промежуток времени.
                             9.Получить транзакции в определенном диапазоне сумм.
+                            10.Сгенерировать диаграмму расходов
                             10.Для вывода всех категорий транзакций.
-                            11.Для просмотра некорректных транзакций.
-                            12.Для отмены и выхода из приложения.
-                            13.Для возврата к выбору файла.
+                            11.Для вывода всех вспом.транзакций
+                            12.Для просмотра некорректных транзакций.
+                            13.Для отмены и выхода из приложения.
+                            14.Для возврата к выбору файла.
                             (Введите цифру.)
                             """);
 
@@ -97,36 +100,29 @@ public class BankMain {
                     int choice = scan.nextInt();
                     switch (choice) {
                         case 1 -> bankInfoDisplay.allInformation(bankStatementProcessor);
-                        case 2 -> bankInfoDisplay.generateGystogram();
                         case 3 -> bankStatementProcessor.mostExpensiveOrMostCheap();
-                        case 4 -> {
-                            System.out.println("\nТранзакции выше какой суммы вы хотели бы увидеть?");
-                            double number = InputConverter.inputNumber();
-                            if (number != -1) {
-                                System.out.println("\nВ каком месяце?");
-                                Month month = InputConverter.inputMonth();
-                                if (month != null) {
-                                    bankStatementProcessor.findTransactions(bankTransaction -> bankTransaction.getDate().getMonth() == month
-                                            && bankTransaction.getAmount() <= -number);
-                                }
-                            }
-                        }
                         case 5 -> bankStatementProcessor.getTransactionByNumber(bankTransactions);
                         case 6 -> bankStatementProcessor.getTransactionByDate();
                         case 7 -> bankInfoDisplay.showTransactionsByNumbersRange();
                         case 8 -> bankInfoDisplay.showTransactionsByDatesRange();
                         case 9 -> bankInfoDisplay.showTransactionsByAmountsRange();
-                        case 10 -> bankInfoDisplay.showAllCategories();
-                        case 11 -> Validator.checkValidatorNotifications();
-                        case 12 -> {
+                        case 10 -> bankReportGenerator.generateDiagram();
+                        case 11 -> bankInfoDisplay.showAllDescriptions();
+                        case 12 -> bankInfoDisplay.showAllAdditionalDescription();
+                        case 13 -> Validator.checkValidatorNotifications();
+                        case 14 -> {
                             scan.close();
                             restart = true;
                             exit = true;
                         }
-                        case 13 -> restart = true;
+                        case 15 -> restart = true;
+                        case 16 -> bankReportGenerator.collectInfo();
+                        case 17 -> bankReportGenerator.generateReport();
                     }
                 } catch (InputMismatchException | IllegalArgumentException | NullPointerException e) {
                     System.out.println("\nОшибка ввода, введите корректный запрос.\n");
+                } catch (InvalidFormatException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
