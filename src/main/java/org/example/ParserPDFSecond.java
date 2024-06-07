@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BankPDFParserOutside implements BankStatementParser {
+public class ParserPDFSecond implements Parsers {
 
-    List<BankTransaction> bankTransactions = new ArrayList<>();
+    List<Transaction> transactions = new ArrayList<>();
 
     // Натравить чатжпт на банковские выписки мои и чужие
     // Парсер работает, но пока кривовато. Он плохо понимает
     @Override
-    public List<BankTransaction> parseLinesFrom(List<String> lines) {
+    public List<Transaction> parseLinesFrom(List<String> lines) {
 
         String regexDate = "^((\\d{2}[-.]{1}\\d{2}[-.]{1}\\d{2}(\\d{2})?)(\\s\\d{2}[-.]{1}))";
         String regexAmount = "(\\+?((\\d*\\s)?\\d+)(,\\d{2}))";
@@ -36,7 +36,7 @@ public class BankPDFParserOutside implements BankStatementParser {
             Matcher matcherDescription = patternDescription.matcher(line);
 
             if (matcherDate.find()) {
-                date = LocalDate.parse(matcherDate.group(2), BankStatementParser.DATE_PATTERN);
+                date = LocalDate.parse(matcherDate.group(2), Parsers.DATE_PATTERN);
                 i++;
                 j = 1;
             }
@@ -51,8 +51,8 @@ public class BankPDFParserOutside implements BankStatementParser {
                     i++;
                 }
                 if (i == 3) {
-                    BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description);
-                    bankTransactions.add(bankTransaction);
+                    Transaction transaction = Transaction.validatedConstructor(date, amount, description);
+                    transactions.add(transaction);
                     date = null;
                     amount = 0;
                     description = null;
@@ -64,24 +64,24 @@ public class BankPDFParserOutside implements BankStatementParser {
                 }
             }
         }
-        return bankTransactions;
+        return transactions;
     }
 
     @Override
-    public List<BankTransaction> collectValidatedTransactions(List<String> lines) {
-        List<BankTransaction> bankTransactionsValid = new ArrayList<>();
+    public List<Transaction> collectValidatedTransactions(List<String> lines) {
+        List<Transaction> transactionsValid = new ArrayList<>();
         int operationNumber = 0;
-        for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
-            if (bankTransaction.validated) {
+        for (Transaction transaction : parseLinesFrom(lines)) {
+            if (transaction.validated) {
                 operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
-                bankTransactionsValid.add(bankTransaction);
+                transaction.setOperationNumber(operationNumber);
+                transactionsValid.add(transaction);
             } else {
                 operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
-                Validator.bankTransactionsInvalid.add(bankTransaction);
+                transaction.setOperationNumber(operationNumber);
+                Validator.transactionsInvalid.add(transaction);
             }
         }
-        return bankTransactionsValid;
+        return transactionsValid;
     }
 }

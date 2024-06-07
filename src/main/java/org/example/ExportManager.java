@@ -1,28 +1,17 @@
 package org.example;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.Random;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.apache.poi.xwpf.usermodel.*;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
 public class ExportManager {
 
@@ -124,12 +113,14 @@ public class ExportManager {
         runDiagram.addPicture(chartInputStream, XWPFDocument.PICTURE_TYPE_JPEG, imagePath, Units.toEMU(1200), Units.toEMU(500));
         chartInputStream.close();
 
+        Random random = new Random(10);
 
-        try (FileOutputStream out = new FileOutputStream("C:\\Users\\gilma\\Desktop\\Отчет по выписке за " + LocalDate.now() + ".docx")) {
+
+        try (FileOutputStream out = new FileOutputStream("C:\\Users\\gilma\\Desktop\\Отчет по выписке за " + LocalDate.now() + ". №" + random.nextInt() + ".docx")) {
             document.write(out);
             System.out.println("Отчет успешно создан.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Ошибка экспорта. Не удалось экспортировать отчет.");
         }
     }
 }

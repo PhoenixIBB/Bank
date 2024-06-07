@@ -35,12 +35,11 @@ public class ImportManager {
                 fileNamesCache = new ArrayList<>();
                 fileNamesCache.add("Нулевой объект.");
                 System.out.println("\nСодержимое текущей директории \"" + RESOURCES + "\": \n");
-                for (File file : files) {
-                    int index = Arrays.asList(files).indexOf(file);
-                    fileNamesCache.add(file.getName());
-                    System.out.println((index + 1) + ". " + file.getName());
-                }
-
+                    for (File file : files) {
+                        int index = Arrays.asList(files).indexOf(file);
+                        fileNamesCache.add(file.getName());
+                        System.out.println((index + 1) + ". " + file.getName());
+                    }
             } else System.out.println("Директория не существует.");
         } catch (NullPointerException e) {
             System.out.println("Ошибка импорта. Директория не считана или пуста.");
@@ -65,35 +64,35 @@ public class ImportManager {
         return fileName;
     }
 
-    public List<BankTransaction> collectInformation() throws IOException {
-        BankStatementParser bankStatementParser = null;
+    public List<Transaction> collectInformation() throws IOException {
+        Parsers parsers = null;
         String format;
         try {
             do {
                 System.out.println("Выберите файл в директории. (введите его номер из списка)");
                 showDirectory();
                 String[] fileNameParts = chooseTheFile().split("\\.");
-                System.out.println("\nИмя выбранного файла: " + fileNameParts[0] + "\nФормат выбранного файла: " + fileNameParts[1] + "\n");
+                System.out.println("\nИмя выбранного файла: " + fileNameParts[0] + "\nФормат выбранного файла: " + fileNameParts[1] + "\nСборка транзакций, пожалуйста, подождите...");
                 format = fileNameParts[1];
 
                 switch (format) {
-                    case "xml" -> bankStatementParser = new BankXMLParser();
-                    case "html" -> bankStatementParser = new BankHTMLParser();
-                    case "csv" -> bankStatementParser = new BankCSVParser();
-                    case "json" -> bankStatementParser = new BankJSONParser();
-                    case "pdf" -> bankStatementParser = new BankPDFParser();
+                    case "xml" -> parsers = new ParserXML();
+                    case "html" -> parsers = new ParserHTML();
+                    case "csv" -> parsers = new ParserCSV();
+                    case "json" -> parsers = new ParserJSON();
+                    case "pdf" -> parsers = new ParserPDF();
                     default -> System.out.println("\nНеподдерживаемый формат!\n");
                 }
-            } while (bankStatementParser == null);
+            } while (parsers == null);
 
             if (format.equals("xml") || format.equals("html") || format.equals("csv") || format.equals("json")) {
                 final Path path = Paths.get(RESOURCES + fileName);
                 final List<String> lines = Files.readAllLines(path);
                 System.out.println("Сборка и сортировка транзакций...");
                 System.out.println("Строк собрано: " + lines.size() + ".");
-                return bankStatementParser.collectValidatedTransactions(lines);
+                return parsers.collectValidatedTransactions(lines);
 
-            } else if (format.equals("pdf")) {
+            } else {
                 File file = new File(RESOURCES + fileName);
 
                 try (PDDocument document = Loader.loadPDF(file)) {
@@ -101,9 +100,9 @@ public class ImportManager {
                     String inputText = pdfStripper.getText(document);
                     String[] linesArray = inputText.split("\n");
                     List<String> lines = new ArrayList<>(Arrays.asList(linesArray));
-                    return bankStatementParser.collectValidatedTransactions(lines);
+                    return parsers.collectValidatedTransactions(lines);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("Ошибка импорта. Не удалось загрузить PDF-файл.");;
                 }
             }
         } catch (Exception e) {

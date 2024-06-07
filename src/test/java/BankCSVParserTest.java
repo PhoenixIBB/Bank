@@ -1,19 +1,17 @@
-import org.example.BankCSVParser;
-import org.example.BankStatementParser;
-import org.example.BankTransaction;
-import org.example.ImportManager;
+import org.example.ParserCSV;
+import org.example.Parsers;
+import org.example.Transaction;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.example.BankStatementParser.DATE_PATTERN;
+import static org.example.Parsers.DATE_PATTERN;
 
 public class BankCSVParserTest {
-    private final BankStatementParser statementParser = new BankCSVParser();
+    private final Parsers statementParser = new ParserCSV();
 
     @Test
     public void shouldParseAllCorrectLines() throws Exception {
@@ -22,11 +20,11 @@ public class BankCSVParserTest {
         lines.add("30-01-2024,-1300,Tesco");
         lines.add("30-01-2024,-710,Mesco");
 
-        final List<BankTransaction> result = statementParser.parseLinesFrom(lines);
-        List<BankTransaction> expected = new ArrayList<>();
-        expected.add(new BankTransaction(LocalDate.parse("30-01-2024", DATE_PATTERN), -450, "Qesco", true, null));
-        expected.add(new BankTransaction(LocalDate.parse("30-01-2024", DATE_PATTERN), -1300, "Tesco", true, null));
-        expected.add(new BankTransaction(LocalDate.parse("30-01-2024", DATE_PATTERN), -710, "Mesco", true, null));
+        final List<Transaction> result = statementParser.parseLinesFrom(lines);
+        List<Transaction> expected = new ArrayList<>();
+        expected.add(new Transaction(LocalDate.parse("30-01-2024", DATE_PATTERN), -450, "Qesco", true, null));
+        expected.add(new Transaction(LocalDate.parse("30-01-2024", DATE_PATTERN), -1300, "Tesco", true, null));
+        expected.add(new Transaction(LocalDate.parse("30-01-2024", DATE_PATTERN), -710, "Mesco", true, null));
         final double tolerance = 0.0d;
 
         Assert.assertEquals(expected.getFirst(), result.getFirst());

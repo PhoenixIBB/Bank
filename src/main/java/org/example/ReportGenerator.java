@@ -11,19 +11,17 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
-public class BankReportGenerator {
+public class ReportGenerator {
 
     // Основная информация
     public static String userName = "";
-    public LocalDate currentDate = LocalDate.now();
     public TreeMap<String, Double> categories = new TreeMap<>();
-    List<BankTransaction> bankTransactions;
+    List<Transaction> transactions;
     double mostExpensive1 = 0;
     double mostExpensive2 = 0;
     double mostExpensive3 = 0;
@@ -43,14 +41,14 @@ public class BankReportGenerator {
     int greenRandom;
     int blueRandom;
 
-    public BankReportGenerator(List<BankTransaction> bankTransactions) {
-        this.bankTransactions = bankTransactions;
+    public ReportGenerator(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
-    public LocalDate getStartOfPeriod(List<BankTransaction> bankTransactions) {
+    public LocalDate getStartOfPeriod(List<Transaction> transactions) {
         LocalDate startOfPeriod = LocalDate.MAX;
-        for (BankTransaction bankTransaction : bankTransactions) {
-            LocalDate tempoDate = bankTransaction.getDate();
+        for (Transaction transaction : transactions) {
+            LocalDate tempoDate = transaction.getDate();
             if (tempoDate.isBefore(startOfPeriod)) {
                 startOfPeriod = tempoDate;
             }
@@ -58,10 +56,10 @@ public class BankReportGenerator {
         return startOfPeriod;
     }
 
-    public LocalDate getEndOfPeriod(List<BankTransaction> bankTransactions) {
+    public LocalDate getEndOfPeriod(List<Transaction> transactions) {
         LocalDate endOfPeriod = LocalDate.MIN;
-        for (BankTransaction bankTransaction : bankTransactions) {
-            LocalDate tempoDate = bankTransaction.getDate();
+        for (Transaction transaction : transactions) {
+            LocalDate tempoDate = transaction.getDate();
             if (tempoDate.isAfter(endOfPeriod)) {
                 endOfPeriod = tempoDate;
             }
@@ -71,58 +69,70 @@ public class BankReportGenerator {
 
     // Общие данные по транзакциям:
     public void collectInfo() {
-        startOfPeriod = getStartOfPeriod(bankTransactions);
-        endOfPeriod = getEndOfPeriod(bankTransactions);
-//        System.out.println(userName);
-        // Общее количество транзакций
-//        System.out.println(BankTransaction.detected);
-        // Общая сумма расходов
-        roundedAmountExpense = (double) Math.round(amountSumExpensesCalculator() * 100) / 100;
-        // Общая сумма доходов
-        roundedAmountIncome = (double) Math.round(amountSumIncomesCalculator() * 100) / 100;
-        // Топ-5 самых дорогих категорий транзакций:
-        for (Map.Entry<String, Double> entry : categories.entrySet()) {
+        startOfPeriod = getStartOfPeriod(transactions);
+        endOfPeriod = getEndOfPeriod(transactions);
 
+        roundedAmountExpense = (double) Math.round(amountSumExpensesCalculator() * 100) / 100;
+        roundedAmountIncome = (double) Math.round(amountSumIncomesCalculator() * 100) / 100;
+
+        for (Map.Entry<String, Double> entry : categories.entrySet()) {
             double tempo = entry.getValue();
             String tempoDescription = entry.getKey();
 
-            if (tempo < mostExpensive1) {
-                mostExpensive1 = tempo;
-                mostExpensiveDescr1 = tempoDescription;
-            } else if (tempo < mostExpensive2 && tempo > mostExpensive1) {
-                mostExpensive2 = tempo;
-                mostExpensiveDescr2 = tempoDescription;
-            } else if (tempo < mostExpensive3 && tempo > mostExpensive2) {
-                mostExpensive3 = tempo;
-                mostExpensiveDescr3 = tempoDescription;
-            } else if (tempo < mostExpensive4 && tempo > mostExpensive3) {
-                mostExpensive4 = tempo;
-                mostExpensiveDescr4 = tempoDescription;
-            } else if (tempo < mostExpensive5 && tempo > mostExpensive4) {
-                mostExpensive5 = tempo;
-                mostExpensiveDescr5 = tempoDescription;
+            if (!entry.getKey().equals("Банковские операции") && !entry.getKey().equals("Перевод на карту") && !entry.getKey().equals("Перевод с карты") && !entry.getKey().equals("Выдача наличных") && entry.getValue() < 0) {
+
+                if (tempo < mostExpensive1) {
+                    mostExpensive5 = mostExpensive4;
+                    mostExpensiveDescr5 = mostExpensiveDescr4;
+                    mostExpensive4 = mostExpensive3;
+                    mostExpensiveDescr4 = mostExpensiveDescr3;
+                    mostExpensive3 = mostExpensive2;
+                    mostExpensiveDescr3 = mostExpensiveDescr2;
+                    mostExpensive2 = mostExpensive1;
+                    mostExpensiveDescr2 = mostExpensiveDescr1;
+                    mostExpensive1 = tempo;
+                    mostExpensiveDescr1 = tempoDescription;
+                } else if (tempo < mostExpensive2 && tempo > mostExpensive1) {
+                    mostExpensive5 = mostExpensive4;
+                    mostExpensiveDescr5 = mostExpensiveDescr4;
+                    mostExpensive4 = mostExpensive3;
+                    mostExpensiveDescr4 = mostExpensiveDescr3;
+                    mostExpensive3 = mostExpensive2;
+                    mostExpensiveDescr3 = mostExpensiveDescr2;
+                    mostExpensive2 = tempo;
+                    mostExpensiveDescr2 = tempoDescription;
+                } else if (tempo < mostExpensive3 && tempo > mostExpensive2) {
+                    mostExpensive5 = mostExpensive4;
+                    mostExpensiveDescr5 = mostExpensiveDescr4;
+                    mostExpensive4 = mostExpensive3;
+                    mostExpensiveDescr4 = mostExpensiveDescr3;
+                    mostExpensive3 = tempo;
+                    mostExpensiveDescr3 = tempoDescription;
+                } else if (tempo < mostExpensive4 && tempo > mostExpensive3) {
+                    mostExpensive5 = mostExpensive4;
+                    mostExpensiveDescr5 = mostExpensiveDescr4;
+                    mostExpensive4 = tempo;
+                    mostExpensiveDescr4 = tempoDescription;
+                } else if (tempo < mostExpensive5 && tempo > mostExpensive4) {
+                    mostExpensive5 = tempo;
+                    mostExpensiveDescr5 = tempoDescription;
+                }
             }
         }
-//        System.out.println("Топ-3 самых дорогих транзакций: \n" +
-//                "1. " + mostExpensiveDescr1 + ". Её суммарная стоимость составила: " + mostExpensive1 + "\n" +
-//                "2. " + mostExpensiveDescr2 + ". Её суммарная стоимость составила: " + mostExpensive2 + "\n" +
-//                "3. " + mostExpensiveDescr3 + ". Её суммарная стоимость составила: " + mostExpensive3 + "\n" +
-//                "4. " + mostExpensiveDescr4 + ". Её суммарная стоимость составила: " + mostExpensive4 + "\n" +
-//                "5. " + mostExpensiveDescr5 + ". Её суммарная стоимость составила: " + mostExpensive5 + "\n");
     }
 
-    public double amountSumExpensesCalculator () {
+    public double amountSumExpensesCalculator() {
         double sum = 0;
-        for (BankTransaction bankTransaction : BankTransaction.expenseTransactions) {
-            sum += bankTransaction.getAmount();
+        for (Transaction transaction : Transaction.expenseTransactions) {
+            sum += transaction.getAmount();
         }
         return sum;
     }
 
-    public double amountSumIncomesCalculator () {
+    public double amountSumIncomesCalculator() {
         double sum = 0;
-        for (BankTransaction bankTransaction : BankTransaction.incomeTransactions) {
-            sum += bankTransaction.getAmount();
+        for (Transaction transaction : Transaction.incomeTransactions) {
+            sum += transaction.getAmount();
         }
         return sum;
     }
@@ -130,12 +140,12 @@ public class BankReportGenerator {
     // Сборка инфы по транзакциям
     public TreeMap<String, Double> getTransactionsInfo() {
 
-        for (BankTransaction bankTransaction : BankTransaction.expenseTransactions) {
-            if (categories.containsKey(bankTransaction.getDescription())) {
-                Double summOfSame = (double) Math.round((categories.get(bankTransaction.getDescription()) + bankTransaction.getAmount()) * 100) / 100;
-                categories.replace(bankTransaction.getDescription(), summOfSame);
+        for (Transaction transaction : Transaction.expenseTransactions) {
+            if (categories.containsKey(transaction.getDescription())) {
+                Double summOfSame = (double) Math.round((categories.get(transaction.getDescription()) + transaction.getAmount()) * 100) / 100;
+                categories.replace(transaction.getDescription(), summOfSame);
             } else {
-                categories.put(bankTransaction.getDescription().trim(), bankTransaction.getAmount());
+                categories.put(transaction.getDescription().trim(), transaction.getAmount());
             }
         }
         return categories;
@@ -146,7 +156,7 @@ public class BankReportGenerator {
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         categories = getTransactionsInfo();
-        header = "Диаграмма расходов за " + bankTransactions.getFirst().getDate().getYear() + " год.";
+        header = "Диаграмма расходов за " + transactions.getFirst().getDate().getYear() + " год.";
 
         for (Map.Entry<String, Double> entry : categories.entrySet()) {
 //            System.out.println("Категория расходов: " + entry.getKey() + "\n Сумма: " + entry.getValue());
@@ -188,7 +198,7 @@ public class BankReportGenerator {
         generateDiagram();
         ExportManager reportExport = new ExportManager();
         this.collectInfo();
-        reportExport.writeToWordFile (startOfPeriod, endOfPeriod, userName, roundedAmountExpense, roundedAmountIncome, mostExpensiveDescr1, mostExpensiveDescr2, mostExpensiveDescr3, mostExpensiveDescr4, mostExpensiveDescr5, mostExpensive1, mostExpensive2, mostExpensive3, mostExpensive4, mostExpensive5, redRandom, greenRandom, blueRandom);
+        reportExport.writeToWordFile(startOfPeriod, endOfPeriod, userName, roundedAmountExpense, roundedAmountIncome, mostExpensiveDescr1, mostExpensiveDescr2, mostExpensiveDescr3, mostExpensiveDescr4, mostExpensiveDescr5, mostExpensive1, mostExpensive2, mostExpensive3, mostExpensive4, mostExpensive5, redRandom, greenRandom, blueRandom);
     }
 
 

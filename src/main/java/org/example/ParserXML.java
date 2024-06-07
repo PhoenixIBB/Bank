@@ -1,20 +1,19 @@
 package org.example;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static org.example.BankTransaction.validatedConstructor;
+import static org.example.Transaction.validatedConstructor;
 
-public class BankXMLParser implements BankStatementParser {
+public class ParserXML implements Parsers {
 
-    public List<BankTransaction> parseLinesFrom(List<String> lines) {
+    public List<Transaction> parseLinesFrom(List<String> lines) {
 
-        List<BankTransaction> bankTransactions = new ArrayList<>();
+        List<Transaction> transactions = new ArrayList<>();
         String regex = "\\s*(<\\w+>)(.+(\\s?.+)*)(</\\w+>)";
         Queue<String> fields = new ArrayDeque<>();
 
@@ -42,10 +41,10 @@ public class BankXMLParser implements BankStatementParser {
                     }
                 }
                 if (fields.size() == 3) {
-                    LocalDate date = LocalDate.parse(fields.poll(), BankStatementParser.DATE_PATTERN);
+                    LocalDate date = LocalDate.parse(fields.poll(), Parsers.DATE_PATTERN);
                     double amount = Double.parseDouble(fields.poll());
                     String description = fields.poll();
-                    bankTransactions.add(validatedConstructor(date, amount, description));
+                    transactions.add(validatedConstructor(date, amount, description));
                 }
             }
         } catch (NullPointerException e) {
@@ -62,26 +61,26 @@ public class BankXMLParser implements BankStatementParser {
             System.out.println("\nПроизошла непредвиденная ошибка: " + e.getMessage() + "\n");
         }
 
-        return bankTransactions;
+        return transactions;
     }
 
 
 
-    public List<BankTransaction> collectValidatedTransactions(List<String> lines) {
-        final List<BankTransaction> bankTransactionsValid = new ArrayList<>();
+    public List<Transaction> collectValidatedTransactions(List<String> lines) {
+        final List<Transaction> transactionsValid = new ArrayList<>();
         int operationNumber = 0;
-        for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
-            if(bankTransaction.validated) {
+        for (Transaction transaction : parseLinesFrom(lines)) {
+            if(transaction.validated) {
                 operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
-                bankTransactionsValid.add(bankTransaction);
+                transaction.setOperationNumber(operationNumber);
+                transactionsValid.add(transaction);
             } else {
                 operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
-                Validator.bankTransactionsInvalid.add(bankTransaction);
+                transaction.setOperationNumber(operationNumber);
+                Validator.transactionsInvalid.add(transaction);
             }
         }
-        return bankTransactionsValid;
+        return transactionsValid;
     }
 }
 

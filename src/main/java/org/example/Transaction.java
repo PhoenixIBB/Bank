@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BankTransaction implements Comparable<BankTransaction> {
+public class Transaction implements Comparable<Transaction> {
     private LocalDate date;
     private double amount;
     private String description;
@@ -17,11 +17,11 @@ public class BankTransaction implements Comparable<BankTransaction> {
     static int added = 0;
     static int badTransactions = 0;
     Notification notification;
-    static List<BankTransaction> expenseTransactions = new ArrayList<>();
-    static List<BankTransaction> incomeTransactions = new ArrayList<>();
+    static List<Transaction> expenseTransactions = new ArrayList<>();
+    static List<Transaction> incomeTransactions = new ArrayList<>();
 
     //Конструктор
-    public BankTransaction(LocalDate date, double amount, String description, boolean validated, Notification notification) {
+    public Transaction(LocalDate date, double amount, String description, boolean validated, Notification notification) {
             this.date = date;
             this.amount = amount;
             this.description = description;
@@ -29,7 +29,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
             this.notification = notification;
     }
 
-    public BankTransaction(LocalDate date, double amount, String description, String additionalDescription, boolean validated, Notification notification) {
+    public Transaction(LocalDate date, double amount, String description, String additionalDescription, boolean validated, Notification notification) {
         this.date = date;
         this.amount = amount;
         this.description = description;
@@ -39,36 +39,36 @@ public class BankTransaction implements Comparable<BankTransaction> {
     }
 
     //Конструктор с валидацией входных данных
-    public static BankTransaction validatedConstructor (LocalDate date, double amount, String description) {
+    public static Transaction validatedConstructor (LocalDate date, double amount, String description) {
 
         Validator validator = new Validator(date, amount, description);
         Notification notification = validator.validate();
-        BankTransaction.detected += 1;
+        Transaction.detected += 1;
 
-        if(!notification.hasErrors()) {
+        if(notification.hasErrors()) {
             added += 1;
-            return new BankTransaction(date, amount, description, true, notification);
+            return new Transaction(date, amount, description, true, notification);
         } else {
             badTransactions += 1;
-            return new BankTransaction(date, amount, description, false, notification);
+            return new Transaction(date, amount, description, false, notification);
         }
     }
 
-    public static BankTransaction validatedConstructor (LocalDate date, double amount, String description, String additionalDescription) {
+    public static Transaction validatedConstructor (LocalDate date, double amount, String description, String additionalDescription) {
 
         Validator validator = new Validator(date, amount, description, additionalDescription);
         Notification notification = validator.validate();
-        BankTransaction.detected += 1;
+        Transaction.detected += 1;
 
-        if(!notification.hasErrors()) {
+        if(notification.hasErrors()) {
             added += 1;
-            if (description.matches("Прочие операции\\r?\\n?|Прочие расходы\\r?\\n?|Неизвестная категория(-)|Неизвестная категория")) {
+            if (description.matches("Прочие операции|Прочие расходы|Неизвестная категория(-)|Неизвестная категория")) {
                 description = additionalDescription;
             }
-            return new BankTransaction(date, amount, description, additionalDescription, true, notification);
+            return new Transaction(date, amount, description, additionalDescription, true, notification);
         } else {
             badTransactions += 1;
-            return new BankTransaction(date, amount, description, additionalDescription, false, notification);
+            return new Transaction(date, amount, description, additionalDescription, false, notification);
         }
     }
 
@@ -111,7 +111,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BankTransaction that = (BankTransaction) o;
+        Transaction that = (Transaction) o;
         return Double.compare(amount, that.amount) == 0 && Objects.equals(date, that.date) && Objects.equals(description, that.description);
     }
 
@@ -130,7 +130,7 @@ public class BankTransaction implements Comparable<BankTransaction> {
     }
 
     @Override
-    public int compareTo(BankTransaction o) {
+    public int compareTo(Transaction o) {
         if(this.amount > o.getAmount()) {return 1;}
         else if(this.amount < o.getAmount()) {return -1;}
         else {return 0;}

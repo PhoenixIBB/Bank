@@ -4,17 +4,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class BankHTMLParser implements BankStatementParser {
+public class ParserHTML implements Parsers {
 
-    public List<BankTransaction> parseLinesFrom (List<String> lines) {
+    public List<Transaction> parseLinesFrom (List<String> lines) {
 
-        List<BankTransaction> bankTransactions = new ArrayList<>();
+        List<Transaction> transactions = new ArrayList<>();
 
         String regex = "(\\s*)(<\\w+>)(.+(\\s\\w+)*)(</\\w+>)";
         int i = 0;
@@ -47,8 +46,8 @@ public class BankHTMLParser implements BankStatementParser {
                 }
             }
             if (i == 3) {
-                BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description);
-                bankTransactions.add(bankTransaction);
+                Transaction transaction = Transaction.validatedConstructor(date, amount, description);
+                transactions.add(transaction);
                 i = 0;
             }
         }
@@ -68,28 +67,28 @@ public class BankHTMLParser implements BankStatementParser {
     } catch (Exception e) {
         System.out.println("\nПроизошла непредвиденная ошибка: " + e.getMessage() + "\n");
     }
-        return bankTransactions;
+        return transactions;
     }
 
 
-    public List<BankTransaction> collectValidatedTransactions (List<String> lines) {
-        List<BankTransaction> bankTransactionsValid = new ArrayList<>();
+    public List<Transaction> collectValidatedTransactions (List<String> lines) {
+        List<Transaction> transactionsValid = new ArrayList<>();
         int operationNumber = 0;
 
-        for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
+        for (Transaction transaction : parseLinesFrom(lines)) {
 
-            if (bankTransaction.validated) {
+            if (transaction.validated) {
                 operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
-                bankTransactionsValid.add(bankTransaction);
+                transaction.setOperationNumber(operationNumber);
+                transactionsValid.add(transaction);
             } else {
                 operationNumber++;
-                bankTransaction.setOperationNumber(operationNumber);
-                bankTransactionsValid.add(bankTransaction);
+                transaction.setOperationNumber(operationNumber);
+                transactionsValid.add(transaction);
             }
 
         }
-        return bankTransactionsValid;
+        return transactionsValid;
     }
 
 }

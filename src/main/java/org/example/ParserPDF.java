@@ -4,32 +4,52 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static org.example.BankTransaction.expenseTransactions;
-import static org.example.BankTransaction.incomeTransactions;
 
-public class BankPDFParser implements BankStatementParser {
+public class ParserPDF implements Parsers {
 
-    List<BankTransaction> bankTransactions = new ArrayList<>();
+    List<Transaction> transactions = new ArrayList<>();
 
-    public List<BankTransaction> parseLinesFrom(List<String> lines) {
+    public List<Transaction> collectValidatedTransactions(List<String> lines) {
+
+        List<Transaction> transactionsValid = new ArrayList<>();
+        int operationNumber = 0;
+
+        for (Transaction transaction : parseLinesFrom(lines)) {
+
+            operationNumber++;
+            transaction.setOperationNumber(operationNumber);
+
+            if (transaction.validated) {
+                transactionsValid.add(transaction);
+            } else {
+                Validator.transactionsInvalid.add(transaction);
+            }
+        }
+        return transactionsValid;
+    }
+
+    public List<Transaction> parseLinesFrom(List<String> lines) {
 
         LocalDate date = null;
         double amount = 0;
         String description = null;
         String additionalDescription = null;
+        String notAdditionalDescription = null;
         int i = 0;
         int j = 0;
 
         String regexDate = "(\\d{2}\\.\\d{2}\\.\\d{4})\\s(\\d{2}:\\d{2})";
         String regexAmount = "^(\\+?(\\d+\\s?\\u00A0?)*\\d+,\\d{2})";
         String regexDescription = "^([А-Я][а-я]+(\\s[А-Яа-я]*)*)";
-        String regexAdditionalDescription = "^((.+)(\\s\\w?\\d*)?(\\.\\sОперация по карте))";
+        String regexAdditionalDescription1 = "^((.+)(\\s\\w?\\d*)?(\\.\\sОперация по карте))";
+        String regexAdditionalDescription2 = "^((.+)(\\s\\w?\\d*)?)";
         String regexUserName = "^([А-Я][а-я]+ [А-Я][а-я]+ [А-Я][а-я]+$)";
 
         Pattern patternDate = Pattern.compile(regexDate);
         Pattern patternAmount = Pattern.compile(regexAmount);
         Pattern patterDescription = Pattern.compile(regexDescription);
-        Pattern patternAdditionalDescription = Pattern.compile(regexAdditionalDescription);
+        Pattern patternAdditionalDescription1 = Pattern.compile(regexAdditionalDescription1);
+        Pattern patternAdditionalDescription2 = Pattern.compile(regexAdditionalDescription2);
         Pattern patternUserName = Pattern.compile(regexUserName);
 
         try {
@@ -38,11 +58,12 @@ public class BankPDFParser implements BankStatementParser {
                 Matcher matcherDate = patternDate.matcher(line);
                 Matcher matcherAmount = patternAmount.matcher(line);
                 Matcher matcherDescription = patterDescription.matcher(line);
-                Matcher matcherAdditionalDescription = patternAdditionalDescription.matcher(line);
+                Matcher matcherAdditionalDescription1 = patternAdditionalDescription1.matcher(line);
+                Matcher matcherAdditionalDescription2 = patternAdditionalDescription2.matcher(line);
                 Matcher matcherUserName = patternUserName.matcher(line);
 
                 if (matcherUserName.find()) {
-                    BankReportGenerator.userName = matcherUserName.group(0);
+                    ReportGenerator.userName = matcherUserName.group(0);
                 }
 
                 if (j >= 1) {
@@ -54,36 +75,42 @@ public class BankPDFParser implements BankStatementParser {
                     if (date != null) {
                         if (description == null) {
                             if (matcherDescription.find()) {
-                                description = matcherDescription.group(1);
+                                notAdditionalDescription = line;
+                                description = matcherDescription.group(1).trim();
                                 i++;
                             }
                         }
                         if (additionalDescription == null) {
-                            if (matcherAdditionalDescription.find()) {
-                                String additionalDescriptionTempo = matcherAdditionalDescription.group(2).replace("*", " ");
+                            if (matcherAdditionalDescription1.find()) {
+                                String additionalDescriptionTempo = matcherAdditionalDescription1.group(2).replace("*", " ");
                                 String[] additionalDescriptionArrayTempo = additionalDescriptionTempo.split("\\s\\w?\\d+\\.?$");
                                 additionalDescription = InputConverter.additionalDescriptionConverter(additionalDescriptionArrayTempo[0]);
                                 i++;
                             }
                         }
+                        if (additionalDescription == null && description != null && amount == 0 && !line.equals(description + "\r") && !line.equals(notAdditionalDescription)) {
+                            if (matcherAdditionalDescription2.find()) {
+                                String additionalDescriptionTempo = matcherAdditionalDescription2.group(2);
+                                additionalDescription = InputConverter.additionalDescriptionConverter(additionalDescriptionTempo);
+                                i++;
+                            }
+                        }
                         if (matcherAmount.find()) {
                             String amountLine = matcherAmount.group(0);
-                            if (amountLine.matches("\\+(\\d+\\s?\\u00A0?)*\\d+,\\d{2}")) {
-                                amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
-                            } else {
+                            if (!amountLine.matches("\\+(\\d+\\s?\\u00A0?)*\\d+,\\d{2}")) {
                                 amountLine = "-" + amountLine;
-                                amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
                             }
+                            amount = Double.parseDouble(amountLine.replaceAll("\\s", "").replaceAll("\\u00A0", "").replace(",", "."));
                             i++;
                         }
                         if (i == 4) {
-                            BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description, additionalDescription);
-                            if (bankTransaction.getAmount() < 0 && !bankTransaction.getDescription().matches("Банковские операции")) {
-                                BankTransaction.expenseTransactions.add(bankTransaction);
+                            Transaction transaction = Transaction.validatedConstructor(date, amount, description, additionalDescription);
+                            if (transaction.getAmount() < 0 && !transaction.getDescription().matches("Банковские операции")) {
+                                Transaction.expenseTransactions.add(transaction);
                             } else {
-                                BankTransaction.incomeTransactions.add(bankTransaction);
+                                Transaction.incomeTransactions.add(transaction);
                             }
-                            bankTransactions.add(bankTransaction);
+                            transactions.add(transaction);
                             i = 0;
                             date = null;
                             amount = 0;
@@ -100,31 +127,12 @@ public class BankPDFParser implements BankStatementParser {
         } catch (Exception e) {
             System.out.println("Ошибка PDF-парсера. Ошибка при сборке транзакций: " + e.getClass());
         }
-        bankTransactions.sort((bankTransactionFirst, bankTransactionSecond) -> {
+        transactions.sort((bankTransactionFirst, bankTransactionSecond) -> {
             if (bankTransactionFirst.getDate().isAfter(bankTransactionSecond.getDate())) return 1;
             else if (bankTransactionFirst.getDate().isBefore(bankTransactionSecond.getDate())) return -1;
             else return 0;
         });
-        return bankTransactions;
-    }
-
-    public List<BankTransaction> collectValidatedTransactions(List<String> lines) {
-
-        List<BankTransaction> bankTransactionsValid = new ArrayList<>();
-        int operationNumber = 0;
-
-        for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
-
-            operationNumber++;
-            bankTransaction.setOperationNumber(operationNumber);
-
-            if (bankTransaction.validated) {
-                bankTransactionsValid.add(bankTransaction);
-            } else {
-                Validator.bankTransactionsInvalid.add(bankTransaction);
-            }
-        }
-        return bankTransactionsValid;
+        return transactions;
     }
 
 }

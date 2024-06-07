@@ -5,14 +5,13 @@ import java.time.Month;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
-public class BankStatementProcessor {
+public class StatementProcessor {
 
-    private final List<BankTransaction> bankTransactions;
-    public BankTransaction mostExpensiveTransaction;
+    private final List<Transaction> transactions;
 
     // Конструктор
-    public BankStatementProcessor(List<BankTransaction> bankTransactions) {
-        this.bankTransactions = bankTransactions;
+    public StatementProcessor(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
 
@@ -43,11 +42,11 @@ public class BankStatementProcessor {
     private double calculateTotalAmount(Month month, final String category, final int year) {
         double total = 0;
         try {
-            for (final BankTransaction bankTransaction : bankTransactions) {
-                if ((month == null || bankTransaction.getDate().getMonth() == month) &&
-                        (category == null || bankTransaction.getDescription().equals(category)) &&
-                        (year == 0 || bankTransaction.getDate().getYear() == year)) {
-                    total += bankTransaction.getAmount();
+            for (final Transaction transaction : transactions) {
+                if ((month == null || transaction.getDate().getMonth() == month) &&
+                        (category == null || transaction.getDescription().equals(category)) &&
+                        (year == 0 || transaction.getDate().getYear() == year)) {
+                    total += transaction.getAmount();
                 }
             }
         } catch (NoSuchElementException e) {
@@ -57,9 +56,9 @@ public class BankStatementProcessor {
     }
 
     // Вывести самую дорогую категорию
-    public BankTransaction mostExpensiveCategory() {
+    public Transaction mostExpensiveCategory() {
         double max = 0;
-        BankTransaction mostExpensiveTransaction = null;
+        Transaction mostExpensiveTransaction = null;
         Scanner scan;
         try {
             scan = new Scanner(System.in);
@@ -79,29 +78,29 @@ public class BankStatementProcessor {
                         "Ноябрь", "ноябрь",
                         "Декабрь", "декабрь":
                     Month month = InputConverter.monthChooser(chooseTimeValue);
-                    for (BankTransaction bankTransaction : bankTransactions) {
-                        if (bankTransaction.getDate().getMonth() == month) {
-                            String category = bankTransaction.getDescription();
+                    for (Transaction transaction : transactions) {
+                        if (transaction.getDate().getMonth() == month) {
+                            String category = transaction.getDescription();
                             double price = calculateTotalAmount(month, category);
                             if (price <= max) {
                                 max = price;
-                                bankTransaction.setTotalPrice(price);
-                                mostExpensiveTransaction = bankTransaction;
+                                transaction.setTotalPrice(price);
+                                mostExpensiveTransaction = transaction;
                             }
                         }
                     }
                     break;
                 case "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026":
-                    for (BankTransaction bankTransaction : bankTransactions) {
-                        int year = bankTransaction.getDate().getYear();
+                    for (Transaction transaction : transactions) {
+                        int year = transaction.getDate().getYear();
                         int yearChoice = Integer.parseInt(chooseTimeValue);
                         if (year == yearChoice) {
-                            String category = bankTransaction.getDescription();
+                            String category = transaction.getDescription();
                             double price = calculateTotalAmount(year, category);
                             if (price <= max) {
                                 max = price;
-                                bankTransaction.setTotalPrice(price);
-                                mostExpensiveTransaction = bankTransaction;
+                                transaction.setTotalPrice(price);
+                                mostExpensiveTransaction = transaction;
                             }
                         }
                     }
@@ -114,9 +113,9 @@ public class BankStatementProcessor {
     }
 
     // Вывести самую дешевую категорию
-    public BankTransaction cheapestCategory() {
+    public Transaction cheapestCategory() {
         double min = -10000000;
-        BankTransaction cheapestTransaction = null;
+        Transaction cheapestTransaction = null;
         Scanner scan;
         try {
             scan = new Scanner(System.in);
@@ -137,30 +136,30 @@ public class BankStatementProcessor {
                         "Декабрь", "декабрь":
 
                     Month month = InputConverter.monthChooser(chooseTimeValue);
-                    for (BankTransaction bankTransaction : bankTransactions) {
-                        if (bankTransaction.getDate().getMonth() == month) {
-                            String category = bankTransaction.getDescription();
+                    for (Transaction transaction : transactions) {
+                        if (transaction.getDate().getMonth() == month) {
+                            String category = transaction.getDescription();
                             double price = calculateTotalAmount(month, category);
                             if (price >= min && price < 0) {
                                 min = price;
-                                bankTransaction.setTotalPrice(price);
-                                cheapestTransaction = bankTransaction;
+                                transaction.setTotalPrice(price);
+                                cheapestTransaction = transaction;
                             }
                         }
                     }
                     break;
                 case "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026":
 
-                    for (BankTransaction bankTransaction : bankTransactions) {
-                        int year = bankTransaction.getDate().getYear();
+                    for (Transaction transaction : transactions) {
+                        int year = transaction.getDate().getYear();
                         int yearChoice = Integer.parseInt(chooseTimeValue);
                         if (year == yearChoice) {
-                            String category = bankTransaction.getDescription();
+                            String category = transaction.getDescription();
                             double price = calculateTotalAmount(year, category);
                             if (price >= min && price < 0) {
                                 min = price;
-                                bankTransaction.setTotalPrice(price);
-                                cheapestTransaction = bankTransaction;
+                                transaction.setTotalPrice(price);
+                                cheapestTransaction = transaction;
                             }
                         }
                     }
@@ -174,7 +173,7 @@ public class BankStatementProcessor {
 
     // Инициировать выбор и вывод выбранной категории
     public void mostExpensiveOrMostCheap() {
-        final BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
+        final StatementProcessor statementProcessor = new StatementProcessor(transactions);
         String monthName;
         String monthNameOutput;
         char firstChar;
@@ -184,7 +183,7 @@ public class BankStatementProcessor {
             String choose = scan.nextLine();
             switch (choose) {
                 case "1":
-                    BankTransaction mostExpensive = bankStatementProcessor.mostExpensiveCategory();
+                    Transaction mostExpensive = statementProcessor.mostExpensiveCategory();
                     monthName = InputConverter.monthConverter(mostExpensive.getDate().getMonth());
                     firstChar = monthName.charAt(0);
                     firstChar = Character.toLowerCase(firstChar);
@@ -192,7 +191,7 @@ public class BankStatementProcessor {
                     System.out.println("\nНаиболее затратная категория за " + monthNameOutput + " это: " + mostExpensive.getDescription() + ". \nЕё сумма составила: " + mostExpensive.getTotalPrice() + ".");
                     break;
                 case "2":
-                    BankTransaction cheapest = bankStatementProcessor.cheapestCategory();
+                    Transaction cheapest = statementProcessor.cheapestCategory();
                     monthName = InputConverter.monthConverter(cheapest.getDate().getMonth());
                     firstChar = monthName.charAt(0);
                     firstChar = Character.toLowerCase(firstChar);
@@ -208,13 +207,13 @@ public class BankStatementProcessor {
     }
 
     // Найти и вывести все транзакции, дороже указанной суммы за определенный период
-    public void findTransactions(final BankTransactionFilter bankTransactionFilter) {
+    public void findTransactions(final TransactionFilter transactionFilter) {
         int i = 0;
         try {
-            for (BankTransaction bankTransaction : bankTransactions) {
-                if (bankTransactionFilter.test(bankTransaction)) {
+            for (Transaction transaction : transactions) {
+                if (transactionFilter.test(transaction)) {
                     i++;
-                    System.out.println("\nИскомые транзакции:\n" + "Транзакция №" + bankTransaction.getOperationNumber() + "\nДата: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Описание: " + bankTransaction.getDescription());
+                    System.out.println("\nИскомые транзакции:\n" + "Транзакция №" + transaction.getOperationNumber() + "\nДата: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Описание: " + transaction.getDescription());
                 }
             }
         } catch (NoSuchElementException e) {
@@ -226,15 +225,15 @@ public class BankStatementProcessor {
     }
 
     // Получить транзакцию по номеру
-    public void getTransactionByNumber(List<BankTransaction> bankTransactions) {
+    public void getTransactionByNumber(List<Transaction> transactions) {
         try {
             Scanner scan = new Scanner(System.in);
             int i = 0;
             System.out.println("\nВведите номер искомой транзакции.");
             int number = scan.nextInt();
-            for (BankTransaction bankTransaction : bankTransactions) {
-                if (bankTransaction.getOperationNumber() == number) {
-                    System.out.println("\nТранзакция №" + number + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
+            for (Transaction transaction : transactions) {
+                if (transaction.getOperationNumber() == number) {
+                    System.out.println("\nТранзакция №" + number + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                     i++;
                 }
             }
@@ -251,11 +250,11 @@ public class BankStatementProcessor {
             Scanner scan = new Scanner(System.in);
             System.out.println("\nВведите дату искомой транзакции в формате 'dd-MM-yyyy'.\n");
             String dateLine = scan.nextLine();
-            LocalDate date = LocalDate.parse(dateLine, BankStatementParser.DATE_PATTERN);
-            for (BankTransaction bankTransaction : bankTransactions) {
-                if (bankTransaction.getDate().equals(date)) {
+            LocalDate date = LocalDate.parse(dateLine, Parsers.DATE_PATTERN);
+            for (Transaction transaction : transactions) {
+                if (transaction.getDate().equals(date)) {
                     i++;
-                    System.out.println("\nТранзакция №" + bankTransaction.getOperationNumber() + ".\nДата транзакции: " + bankTransaction.getDate().format(BankStatementParser.SINGLE_DATE_PATTERN) + ". Стоимость: " + bankTransaction.getAmount() + ". Категория: " + bankTransaction.getDescription());
+                    System.out.println("\nТранзакция №" + transaction.getOperationNumber() + ".\nДата транзакции: " + transaction.getDate().format(Parsers.SINGLE_DATE_PATTERN) + ". Стоимость: " + transaction.getAmount() + ". Категория: " + transaction.getDescription());
                 }
             }
             if (i == 0) System.out.println("\nТранзакция не найдена.");

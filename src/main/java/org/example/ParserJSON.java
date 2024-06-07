@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BankJSONParser implements BankStatementParser {
+public class ParserJSON implements Parsers {
 
-    List<BankTransaction> bankTransactions = new ArrayList<>();
+    List<Transaction> transactions = new ArrayList<>();
 
-    public List<BankTransaction> parseLinesFrom(List<String> lines) {
+    public List<Transaction> parseLinesFrom(List<String> lines) {
 
         String regexDate = "\\d{2}.\\d{2}.\\d{4}";
         String regexAmount = "(\"[A-Za-zА-Яа-я]+\":)(\\s*\"?)(-?\\d+)(,)";
@@ -45,34 +45,34 @@ public class BankJSONParser implements BankStatementParser {
                 i++;
             }
             if (i == 3) {
-                BankTransaction bankTransaction = BankTransaction.validatedConstructor(date, amount, description);
-                bankTransactions.add(bankTransaction);
+                Transaction transaction = Transaction.validatedConstructor(date, amount, description);
+                transactions.add(transaction);
                 i = 0;
                 date = null;
                 amount = 0;
                 description = null;
             }
         }
-        return bankTransactions;
+        return transactions;
     }
 
-    public List<BankTransaction> collectValidatedTransactions(List<String> lines) {
+    public List<Transaction> collectValidatedTransactions(List<String> lines) {
 
-        List<BankTransaction> bankTransactionsValid = new ArrayList<>();
+        List<Transaction> transactionsValid = new ArrayList<>();
         int operationNumber = 0;
 
-        for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
+        for (Transaction transaction : parseLinesFrom(lines)) {
 
             operationNumber++;
-            bankTransaction.setOperationNumber(operationNumber);
+            transaction.setOperationNumber(operationNumber);
 
-            if (bankTransaction.validated) {
-                bankTransactionsValid.add(bankTransaction);
+            if (transaction.validated) {
+                transactionsValid.add(transaction);
             } else {
-                Validator.bankTransactionsInvalid.add(bankTransaction);
+                Validator.transactionsInvalid.add(transaction);
             }
         }
-        return bankTransactionsValid;
+        return transactionsValid;
     }
 
 }

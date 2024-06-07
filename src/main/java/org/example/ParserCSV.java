@@ -1,16 +1,15 @@
 package org.example;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
-import static org.example.BankTransaction.validatedConstructor;
+import static org.example.Transaction.validatedConstructor;
 
-public class BankCSVParser implements BankStatementParser {
+public class ParserCSV implements Parsers {
 
-    public BankTransaction formatFrom (final String line) {
+    public Transaction formatFrom (final String line) {
         final String[] columns = line.split(",");
         LocalDate date = null;
         double amount = 0;
@@ -21,10 +20,10 @@ public class BankCSVParser implements BankStatementParser {
                 // Преобразуем дату, если она доступна
                 try {
                     if (columns[0] != null && !columns[0].isEmpty()) {
-                        date = LocalDate.parse(columns[0], BankStatementParser.DATE_PATTERN);
+                        date = LocalDate.parse(columns[0], Parsers.DATE_PATTERN);
                     }
                 } catch (DateTimeParseException e) {
-                    date = LocalDate.parse("01-01-2300", BankStatementParser.DATE_PATTERN);
+                    date = LocalDate.parse("01-01-2300", Parsers.DATE_PATTERN);
                 }
                 // Преобразуем сумму, если она доступна
                 try {
@@ -46,27 +45,27 @@ public class BankCSVParser implements BankStatementParser {
         return validatedConstructor (date, amount, description);
     }
 
-    public List<BankTransaction> parseLinesFrom(final List<String> lines) {
-        final List<BankTransaction> bankTransactions = new ArrayList<>();
+    public List<Transaction> parseLinesFrom(final List<String> lines) {
+        final List<Transaction> transactions = new ArrayList<>();
         for(final String line : lines) {
-            bankTransactions.add(formatFrom((line)));
+            transactions.add(formatFrom((line)));
         }
-        return bankTransactions;
+        return transactions;
     }
 
-    public List<BankTransaction> collectValidatedTransactions (final List<String> lines) {
-        final List<BankTransaction> bankTransactionsValid = new ArrayList<>();
+    public List<Transaction> collectValidatedTransactions (final List<String> lines) {
+        final List<Transaction> transactionsValid = new ArrayList<>();
         int operationNumber = 0;
-        for (BankTransaction bankTransaction : parseLinesFrom(lines)) {
+        for (Transaction transaction : parseLinesFrom(lines)) {
             operationNumber++;
-            bankTransaction.setOperationNumber(operationNumber);
-            if (bankTransaction.validated) {
-                bankTransactionsValid.add(bankTransaction);
+            transaction.setOperationNumber(operationNumber);
+            if (transaction.validated) {
+                transactionsValid.add(transaction);
             } else {
-                Validator.bankTransactionsInvalid.add(bankTransaction);
+                Validator.transactionsInvalid.add(transaction);
             }
         }
-        return bankTransactionsValid;
+        return transactionsValid;
     }
 
 }

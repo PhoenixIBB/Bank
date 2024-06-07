@@ -4,15 +4,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Validator {
 
-    private LocalDate date;
-    private double amount;
-    private String description;
-    private String additionalDescription;
-    public static List<BankTransaction> bankTransactionsInvalid = new ArrayList<>();
+    private final LocalDate date;
+    private final double amount;
+    private final String description;
+    private final String additionalDescription;
+    public static List<Transaction> transactionsInvalid = new ArrayList<>();
 
     public Validator(LocalDate date, double amount, String description) {
         this.date = date;
@@ -30,11 +29,11 @@ public class Validator {
 
     public static void checkValidatorNotifications () {
         int i = 0;
-        if (Validator.bankTransactionsInvalid != null) {
-            for (BankTransaction bankTransaction : Validator.bankTransactionsInvalid) {
-                System.out.println("Некорректная транзакция №" + bankTransaction.getOperationNumber() + ";");
-                System.out.println("Содержимое транзакции: \nДата:" + bankTransaction.getDate() + "; Стоимость: " + bankTransaction.getAmount() + "; Категория: " + bankTransaction.getDescription() + ".");
-                System.out.println(bankTransaction.notification.errorMessage());
+        if (Validator.transactionsInvalid != null) {
+            for (Transaction transaction : Validator.transactionsInvalid) {
+                System.out.println("Некорректная транзакция №" + transaction.getOperationNumber() + ";");
+                System.out.println("Содержимое транзакции: \nДата:" + transaction.getDate() + "; Стоимость: " + transaction.getAmount() + "; Категория: " + transaction.getDescription() + ".");
+                System.out.println(transaction.notification.errorMessage());
             i++;
             }
         }

@@ -6,29 +6,6 @@ import java.util.Scanner;
 
 public class InputConverter {
 
-    public static double inputNumber() {
-        Scanner scan = new Scanner(System.in);
-        double input = -1;
-        try {
-            input = scan.nextDouble();
-        } catch (IllegalArgumentException | InputMismatchException e) {
-            System.out.println("\nОшибка конвертера! Неверный ввод числа!");
-        }
-        return input;
-    }
-
-    public static Month inputMonth() {
-        Scanner scan = new Scanner(System.in);
-        Month month = null;
-        try {
-            String mesyats = scan.nextLine();
-            month = monthChooser(mesyats);
-        } catch (IllegalArgumentException | InputMismatchException e) {
-            System.out.println("\nОшибка конвертера! Неверный ввод месяца!");
-        }
-        return month;
-    }
-
     public static String additionalDescriptionConverter(String additionalDescription) {
 
         return switch (additionalDescription) {
@@ -140,6 +117,4 @@ public class InputConverter {
         }
         return monthName;
     }
-
-
 }
